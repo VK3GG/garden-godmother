@@ -669,7 +669,7 @@ function PlantsPageInner() {
       </FilterSection>
 
       <FilterSection title="Season" activeCount={seasonFilter !== 'all' ? 1 : 0}>
-        {['cool', 'warm', 'monsoon'].map((s) => (
+        {['summer', 'autumn', 'winter', 'spring'].map((s) => (
           <FilterCheckbox
             key={s}
             label={`${s.charAt(0).toUpperCase() + s.slice(1)} Season`}

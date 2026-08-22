@@ -97,9 +97,10 @@ interface YieldData {
 }
 
 const seasonLabel: Record<string, string> = {
-  cool: 'Cool',
-  warm: 'Warm',
-  monsoon: 'Monsoon',
+  summer: 'Summer',
+  autumn: 'Autumn',
+  winter: 'Winter',
+  spring: 'Spring',
 };
 
 const methodLabel: Record<string, string> = {

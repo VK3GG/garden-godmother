@@ -24,9 +24,10 @@ interface SeasonData {
 }
 
 const seasonLabel: Record<string, string> = {
-  cool: 'Cool Season',
-  warm: 'Warm Season',
-  monsoon: 'Monsoon Season',
+  summer: 'Summer',
+  autumn: 'Autumn',
+  winter: 'Winter',
+  spring: 'Spring',
 };
 
 export default function SeasonHistoryPage() {

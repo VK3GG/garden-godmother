@@ -106,9 +106,10 @@ export default function ShoppingPage() {
             className="px-3 py-2 border border-earth-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-earth-700 dark:text-gray-100 focus:ring-2 focus:ring-garden-500 focus:border-garden-500 outline-none"
           >
             <option value="current">Current Needs</option>
-            <option value="cool">Cool Season (Oct-Mar)</option>
-            <option value="warm">Warm Season (Apr-Jun)</option>
-            <option value="monsoon">Monsoon Season (Jul-Sep)</option>
+            <option value="summer">Summer (Dec-Feb)</option>
+            <option value="autumn">Autumn (Mar-May)</option>
+            <option value="winter">Winter (Jun-Aug)</option>
+            <option value="spring">Spring (Sep-Nov)</option>
           </select>
           <button
             onClick={handlePrint}
