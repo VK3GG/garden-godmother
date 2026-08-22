@@ -33,21 +33,6 @@ import {
 import { useToast } from '../toast';
 import { useModal } from '../confirm-modal';
 import { setGardenTimezone, getGardenToday, getGardenYear, formatGardenDateTime } from '../timezone';
-// ─── Australian Climate Zones ───
-const USDA_ZONES = [
-  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
-  'Semi-Arid', 'Arid', 'Mediterranean',
-];
-/** Estimate Australian climate zone from latitude */
-function estimateUsdaZone(lat: number, lon: number): string {
-  const absLat = Math.abs(lat);
-  if (absLat < 15) return 'Tropical';
-  if (absLat < 25) return 'Subtropical';
-  if (absLat < 30) return 'Semi-Arid';
-  if (absLat < 35) return 'Mediterranean';
-  if (absLat < 40) return 'Temperate';
-  return 'Cool Temperate';
-}
 
 // ─── Types ───
 
@@ -119,61 +104,13 @@ interface IrrigationZone {
   beds?: string[];
 }
 
-// ─── Australian Climate Zones ───
+// ─── USDA Zones ───
 
 const USDA_ZONES = [
   'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
   'Semi-Arid', 'Arid', 'Mediterranean',
 ];
 
-/** Estimate Australian climate zone from latitude */
-function estimateUsdaZone(lat: number, lon: number): string {
-  // Australian climate zones based on latitude
-  const absLat = Math.abs(lat);
-  if (absLat < 15) return 'Tropical';
-  if (absLat < 25) return 'Subtropical';
-  if (absLat < 30) return 'Semi-Arid';
-  if (absLat < 35) return 'Mediterranean';
-  if (absLat < 40) return 'Temperate';
-  return 'Cool Temperate';
-}
-import Link from 'next/link';
-import {
-  getSettings,
-  updateProperty,
-  getExportUrl,
-  getCalendarIcalUrl,
-  getSensorWeather,
-  getSensorRachio,
-  getIrrigationZones,
-  generateTasks,
-  getTasks,
-  geocodeAddress,
-  getFrostDates,
-  getSoilTypes,
-  getBackups,
-  createBackup,
-  restoreBackup,
-  getBackupDownloadUrl,
-  deleteBackup,
-  getUpdateStatus,
-  getMeshtasticStatus,
-  getFederationIdentity,
-  setupFederationIdentity,
-  getFederationPrefs,
-  updateFederationPrefs,
-  getFederationPeers,
-  pairFromQr,
-  API_URL,
-} from '../api';
-import { useToast } from '../toast';
-import { useModal } from '../confirm-modal';
-import { setGardenTimezone, getGardenToday, getGardenYear, formatGardenDateTime } from '../timezone';
-// ─── Australian Climate Zones ───
-const USDA_ZONES = [
-  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
-  'Semi-Arid', 'Arid', 'Mediterranean',
-];
 /** Estimate Australian climate zone from latitude */
 function estimateUsdaZone(lat: number, lon: number): string {
   const absLat = Math.abs(lat);
@@ -183,107 +120,6 @@ function estimateUsdaZone(lat: number, lon: number): string {
   if (absLat < 35) return 'Mediterranean';
   if (absLat < 40) return 'Temperate';
   return 'Cool Temperate';
-}
-
-// ─── Types ───
-
-interface SettingsData {
-  property: {
-    id: number;
-    name: string;
-    width_feet: number;
-    height_feet: number;
-    orientation_degrees: number;
-    latitude: number;
-    longitude: number;
-    address: string | null;
-    default_soil_type: string | null;
-    default_soil_ph: number | null;
-    default_soil_notes: string | null;
-    last_frost_spring: string | null;
-    first_frost_fall: string | null;
-    frost_free_days: number | null;
-    timezone: string | null;
-  };
-  soil_profile: {
-    default_soil: string;
-    default_ph: number;
-    location: string;
-    characteristics: string[];
-    challenges: string[];
-    notes?: string;
-  };
-  rachio_status: {
-    connected: boolean;
-    controller: string | null;
-    zones: number;
-    valves: number;
-  };
-  weather_status: {
-    connected: boolean;
-    station: string | null;
-    condition: string | null;
-    temperature: number | null;
-    humidity: number | null;
-  };
-  database_stats: {
-    plants: number;
-    varieties: number;
-    enriched: number;
-    planters: number;
-    ground_plants: number;
-    trays: number;
-    journal_entries: number;
-    harvests: number;
-    tasks: number;
-    expenses: number;
-    photos: number;
-  };
-  version: string;
-}
-
-type ThemeMode = 'light' | 'dark' | 'system';
-type FontSize = 'small' | 'medium' | 'large';
-type Spacing = 'compact' | 'comfortable';
-type TempUnit = 'F' | 'C';
-
-interface IrrigationZone {
-  zone_name: string;
-  zone_number?: number;
-  enabled?: boolean;
-  planters?: string[];
-  beds?: string[];
-}
-
-// ─── Australian Climate Zones ───
-
-const USDA_ZONES = [
-  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
-  'Semi-Arid', 'Arid', 'Mediterranean',
-];
-
-/** Estimate USDA zone from latitude/longitude (US-centric approximation) */
-function estimateUsdaZone(lat: number, lon: number): string {
-  // Special-case known metro areas in AZ
-  if (lat >= 33.0 && lat <= 34.0 && lon >= -112.5 && lon <= -111.5) return '9b'; // Phoenix
-  if (lat >= 32.0 && lat <= 33.0 && lon >= -111.5 && lon <= -110.5) return '9a'; // Tucson
-  if (lat >= 34.5 && lat <= 35.5 && lon >= -112.0 && lon <= -111.0) return '6a'; // Flagstaff
-
-  // General US latitude-based approximation
-  if (lat >= 48) return '3b';
-  if (lat >= 46) return '4a';
-  if (lat >= 44) return '4b';
-  if (lat >= 42) return '5a';
-  if (lat >= 40) return '5b';
-  if (lat >= 38) return '6a';
-  if (lat >= 36) return '6b';
-  if (lat >= 34) return '7a';
-  if (lat >= 32) return '8a';
-  if (lat >= 30) return '9a';
-  if (lat >= 28) return '9b';
-  if (lat >= 26) return '10a';
-  if (lat >= 24) return '10b';
-  return '11a';
 }
 
 /** Pick a default soil type based on lat/lon */
@@ -2153,7 +1989,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2">
               <InlineInput
                 value={property.width_feet}
-                onSave={(v) => saveProperty('width_feet', v)} // stored in feet, displayed as metres
+                onSave={(v) => saveProperty('width_feet', v)}
                 type="number"
                 className="!w-24"
                 placeholder="100"
