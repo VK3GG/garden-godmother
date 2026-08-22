@@ -76,6 +76,45 @@ def get_plantbook_config() -> dict:
 
 
 def _plantbook_token() -> str:
-    """Get the OpenPlantBook API token."""
-    return get_plantbook_config()["token"]
+    """Get the OpenPlantBook API token, fetching via OAuth2 if needed."""
+    config = get_plantbook_config()
+    if config.get("token"):
+        return config["token"]
+    # Try to fetch token using client_id and client_secret
+    client_id = config.get("client_id")
+    client_secret = config.get("client_secret")
+    if not client_id or not client_secret:
+        return ""
+    try:
+        import httpx
+        resp = httpx.post(
+            "https://open.plantbook.io/api/v1/token/",
+            data={
+                "grant_type": "client_credentials",
+                "client_id": client_id,
+                "client_secret": client_secret,
+            },
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            token = resp.json().get("access_token", "")
+            # Save token back to config
+            from db import get_db
+            with get_db() as db:
+                import json
+                existing = db.execute(
+                    "SELECT config FROM integrations WHERE integration = 'openplantbook'"
+                ).fetchone()
+                if existing:
+                    cfg = json.loads(existing["config"])
+                    cfg["token"] = token
+                    db.execute(
+                        "UPDATE integrations SET config = ? WHERE integration = 'openplantbook'",
+                        (json.dumps(cfg),)
+                    )
+                    db.commit()
+            return token
+    except Exception as e:
+        print(f"OpenPlantBook token fetch failed: {e}")
+    return ""
 
