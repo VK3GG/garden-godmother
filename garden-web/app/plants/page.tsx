@@ -250,6 +250,8 @@ function PlantsPageInner() {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
+  const [opbResults, setOpbResults] = useState<any[]>([]);
+  const [showOpbResults, setShowOpbResults] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [seasonFilter, setSeasonFilter] = useState('all');
   const [sunFilter, setSunFilter] = useState('all');
@@ -951,7 +953,80 @@ function PlantsPageInner() {
             </div>
           ) : plants.length === 0 ? (
             <div className="text-center py-16 text-earth-400 dark:text-gray-500">
-              No plants match your filters. Try adjusting your search.
+              <p className="mb-4">No plants match your filters.</p>
+              {debouncedSearch && (
+                <div className="mt-4">
+                  <p className="text-sm mb-3 text-earth-500 dark:text-gray-400">Search OpenPlantBook for &ldquo;{debouncedSearch}&rdquo;?</p>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const resp = await fetch(`/api/openplantbook/search?q=${encodeURIComponent(debouncedSearch)}`, { credentials: 'include' });
+                        if (resp.status === 429) {
+                          alert('OpenPlantBook rate limit reached. Please try again tomorrow.');
+                          return;
+                        }
+                        if (resp.status === 401) {
+                          alert('OpenPlantBook not configured. Please add your API key in Settings > Integrations.');
+                          return;
+                        }
+                        const data = await resp.json();
+                        if (data.detail) {
+                          alert(data.detail);
+                          return;
+                        }
+                        setOpbResults(data.results || []);
+                        setShowOpbResults(true);
+                      } catch (e) {
+                        alert('OpenPlantBook search failed. Please try again later.');
+                      }
+                    }}
+                    className="px-4 py-2 bg-garden-500 text-white rounded-lg hover:bg-garden-600 transition-colors text-sm"
+                  >
+                    🌿 Search OpenPlantBook
+                  </button>
+                  {showOpbResults && opbResults.length > 0 && (
+                    <div className="mt-4 text-left max-w-lg mx-auto space-y-2">
+                      {opbResults.map((r: any) => (
+                        <div key={r.pid} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-earth-200 dark:border-gray-700">
+                          <div>
+                            <p className="font-medium text-earth-800 dark:text-gray-100">{r.display_pid}</p>
+                            <p className="text-xs text-earth-400 dark:text-gray-500">{r.category}</p>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const resp = await fetch(`/api/openplantbook/import`, {
+                                  method: 'POST',
+                                  credentials: 'include',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ pid: r.pid, display_name: r.display_pid }),
+                                });
+                                if (resp.status === 429) {
+                                  alert('OpenPlantBook rate limit reached. Please try again tomorrow.');
+                                  return;
+                                }
+                                const result = await resp.json();
+                                if (resp.ok) {
+                                  alert(result.message || `${r.display_pid} imported successfully!`);
+                                  setShowOpbResults(false);
+                                  window.location.reload();
+                                } else {
+                                  alert(result.detail || 'Import failed');
+                                }
+                              } catch (e) {
+                                alert('Import failed. Please try again later.');
+                              }
+                            }}
+                            className="px-3 py-1 bg-garden-500 text-white rounded text-sm hover:bg-garden-600"
+                          >
+                            Import
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3' : 'space-y-3'}>
