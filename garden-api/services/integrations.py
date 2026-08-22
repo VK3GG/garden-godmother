@@ -103,13 +103,13 @@ def _plantbook_token() -> str:
             with get_db() as db:
                 import json
                 existing = db.execute(
-                    "SELECT config FROM integrations WHERE integration = 'openplantbook'"
+                    "SELECT config FROM integration_settings WHERE integration = 'openplantbook'"
                 ).fetchone()
                 if existing:
                     cfg = json.loads(existing["config"])
                     cfg["token"] = token
                     db.execute(
-                        "UPDATE integrations SET config = ? WHERE integration = 'openplantbook'",
+                        "UPDATE integration_settings SET config = ? WHERE integration = 'openplantbook'",
                         (json.dumps(cfg),)
                     )
                     db.commit()
