@@ -121,7 +121,7 @@ function estimateUsdaZone(lat: number, lon: number): string {
   if (absLat < 35) return 'Mediterranean';
   if (absLat < 40) return 'Temperate';
   return 'Cool Temperate';
-}useState, useCallback, useRef } from 'react';
+}
 import Link from 'next/link';
 import {
   getSettings,
