@@ -26,7 +26,7 @@ from constants import (
     create_undo_action, AMENDMENT_TYPES,
     SOIL_TYPES, DEFAULT_SOIL_PROFILE, parse_md,
 )
-from services.integrations import get_openai_key, get_ha_config, get_plantbook_config, get_integration_config
+from services.integrations import get_openai_key, get_ha_config, get_plantbook_config, get_integration_config, _plantbook_token
 from routes.calendar import whats_plantable_now
 from plant_knowledge import get_knowledge, generate_seed_sources, calculate_data_quality, PLANT_KNOWLEDGE
 from routes.sensors import (
