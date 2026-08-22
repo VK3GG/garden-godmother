@@ -326,7 +326,7 @@ async def _fetch_openmeteo_forecast(days: int) -> list[dict]:
     try:
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.get(
-                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=fahrenheit&precipitation_unit=inch&forecast_days={days}&timezone=auto"
+                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&temperature_unit=celsius&precipitation_unit=mm&forecast_days={days}&timezone=auto"
             )
             if resp.status_code == 200:
                 data = resp.json()
@@ -543,9 +543,9 @@ def _analyze_forecast_weather(forecast: list[dict], current_temp: Optional[float
       rain_forecast_2d: total rain in next 2 days (inches)
       rain_skip: bool -- should we skip watering today?
       rain_skip_reason: str or None
-      heat_wave: bool -- 3+ consecutive days above 105F
+      heat_wave: bool -- 3+ consecutive days above 40C
       heat_wave_temps: list of temps
-      frost_risk: bool -- any day in next 3 with low < 40F
+      frost_risk: bool -- any day in next 3 with low < 4C
       frost_risk_temps: list of (date, low) tuples
       high_wind: bool -- current wind > 20mph
       high_wind_speed: float or None
@@ -596,11 +596,11 @@ def _analyze_forecast_weather(forecast: list[dict], current_temp: Optional[float
             result["rain_skip_reason"] = f"Skipped watering \u2014 {tomorrow_rain}in rain forecast tomorrow"
             result["insights"].append(result["rain_skip_reason"])
 
-    # Heat wave: 3+ days above 105F
+    # Heat wave: 3+ days above 40C
     heat_temps = []
     for day in forecast[:5]:
         high = day.get("high_f")
-        if high is not None and high > 105:
+        if high is not None and high > 40:
             heat_temps.append(round(high))
         else:
             if len(heat_temps) >= 3:
@@ -609,20 +609,20 @@ def _analyze_forecast_weather(forecast: list[dict], current_temp: Optional[float
     if len(heat_temps) >= 3:
         result["heat_wave"] = True
         result["heat_wave_temps"] = heat_temps[:5]
-        temps_str = ", ".join(f"{t}\u00b0F" for t in heat_temps[:5])
-        result["insights"].append(f"Heat wave forecast \u2014 {len(heat_temps)} days above 105\u00b0F ({temps_str})")
+        temps_str = ", ".join(f"{t}\u00b0C" for t in heat_temps[:5])
+        result["insights"].append(f"Heat wave forecast \u2014 {len(heat_temps)} days above 40\u00b0C ({temps_str})")
 
-    # Frost risk: next 3 days low < 40F
+    # Frost risk: next 3 days low < 4C
     frost_temps = []
     for day in forecast[:3]:
         low = day.get("low_f")
-        if low is not None and low < 40:
+        if low is not None and low < 4:
             frost_temps.append((day["date"], round(low)))
     if frost_temps:
         result["frost_risk"] = True
         result["frost_risk_temps"] = frost_temps
-        frost_str = ", ".join(f"{d}: {t}\u00b0F" for d, t in frost_temps)
-        result["insights"].append(f"Frost risk \u2014 lows below 40\u00b0F ({frost_str})")
+        frost_str = ", ".join(f"{d}: {t}\u00b0C" for d, t in frost_temps)
+        result["insights"].append(f"Frost risk \u2014 lows below 4\u00b0C ({frost_str})")
 
     # High wind (current sensor or today's forecast)
     wind_val = current_wind
@@ -916,7 +916,7 @@ async def get_irrigation_summary():
                     needs_water = False
                     if rain_today_in is not None and rain_today_in > 0.25:
                         pass  # Recent rain, skip
-                    elif temp_f is not None and temp_f > 100:
+                    elif temp_f is not None and temp_f > 38:
                         needs_water = True  # Extreme heat
                     elif "high" in water_needs:
                         needs_water = True  # High-water plants always need daily check
@@ -1072,7 +1072,7 @@ def _watering_recommendation(
     elif any_available and not any_dry:
         reasons.append("Soil moisture levels adequate")
 
-    if temp is not None and temp > 100:
+    if temp is not None and temp > 38:
         reasons.append(f"High temperature ({temp}F) — water early morning or evening only")
         if action != "skip":
             action = "water"
