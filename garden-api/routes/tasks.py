@@ -471,11 +471,11 @@ def generate_tasks():
 
             # Heat wave: generate "Prepare shade cloth" task if 3+ days above 105F
             if wx["heat_wave"]:
-                temps_str = ", ".join(f"{t}\u00b0F" for t in wx["heat_wave_temps"])
+                temps_str = ", ".join(f"{t}\u00b0C" for t in wx["heat_wave_temps"])
                 insert_task(
                     "custom",
                     "Prepare shade cloth for heat wave",
-                    f"Heat wave forecast \u2014 {len(wx['heat_wave_temps'])} days above 105\u00b0F ({temps_str}). Install shade cloth over sensitive plants.",
+                    f"Heat wave forecast \u2014 {len(wx['heat_wave_temps'])} days above 40\u00b0C ({temps_str}). Install shade cloth over sensitive plants.",
                     "high",
                     today_str,
                     source="auto:weather",
@@ -483,11 +483,11 @@ def generate_tasks():
 
             # Frost risk: generate frost protection tasks
             if wx["frost_risk"]:
-                frost_str = ", ".join(f"{d}: {t}\u00b0F" for d, t in wx["frost_risk_temps"])
+                frost_str = ", ".join(f"{d}: {t}\u00b0C" for d, t in wx["frost_risk_temps"])
                 insert_task(
                     "custom",
                     "Protect plants from frost",
-                    f"Frost risk \u2014 lows below 40\u00b0F in next 3 days ({frost_str}). Cover tender plants, move pots indoors, water soil deeply before freeze.",
+                    f"Frost risk \u2014 lows below 4\u00b0C in next 3 days ({frost_str}). Cover tender plants, move pots indoors, water soil deeply before freeze.",
                     "urgent",
                     today_str,
                     source="auto:weather",
@@ -633,11 +633,11 @@ def generate_tasks():
                 if temp_val and temp_val > 110:
                     interval = 1
                     base_priority = "urgent"
-                    reason = f"Urgent watering \u2014 {temp_val}\u00b0F high today."
+                    reason = f"Urgent watering \u2014 {temp_val}\u00b0C high today."
                 elif temp_val and temp_val > 100:
                     interval = 1
                     base_priority = "urgent" if top_need == "high" else "high"
-                    reason = f"High heat ({temp_val}\u00b0F) \u2014 water today."
+                    reason = f"High heat ({temp_val}\u00b0C) \u2014 water today."
                 elif has_seedlings:
                     reason = f"Seedlings in {bed_d['name']} need daily watering."
                 else:
@@ -734,7 +734,7 @@ def generate_tasks():
                 if temp_val and temp_val > 110:
                     interval = 1
                     priority = "urgent"
-                    reason = f"Urgent watering \u2014 {temp_val}\u00b0F high today. Water {gp_name} immediately."
+                    reason = f"Urgent watering \u2014 {temp_val}\u00b0C high today. Water {gp_name} immediately."
 
                 # Rain skip: today's rain OR forecast rain in next 2 days (but not for newly planted)
                 rain_skip_gp = (rain_today and rain_today > 0.25) or wx.get("rain_skip", False)
@@ -915,7 +915,7 @@ def generate_tasks():
                     low_f = float(low_temp)
                 except (ValueError, TypeError):
                     continue
-                if low_f < 40:
+                if low_f < 4:
                     dt_str = entry.get("datetime", "")
                     try:
                         frost_date = datetime.fromisoformat(dt_str.replace("Z", "+00:00")).strftime("%Y-%m-%d")
@@ -927,11 +927,11 @@ def generate_tasks():
                         (frost_date,)
                     ).fetchone()
                     if not existing_frost:
-                        frost_priority = "urgent" if low_f < 32 else "high"
+                        frost_priority = "urgent" if low_f < 0 else "high"
                         insert_task(
                             "custom",
-                            f"Frost Protection \u2014 {low_f:.0f}\u00b0F forecast",
-                            f"Low of {low_f:.0f}\u00b0F expected on {frost_date}. Cover tender plants, move potted plants under shelter, and check irrigation for freeze protection.",
+                            f"Frost Protection \u2014 {low_f:.0f}\u00b0C forecast",
+                            f"Low of {low_f:.0f}\u00b0C expected on {frost_date}. Cover tender plants, move potted plants under shelter, and check irrigation for freeze protection.",
                             frost_priority,
                             frost_date,
                             source="auto:frost_alert",
@@ -948,8 +948,8 @@ def generate_tasks():
                                 lambda uid=admin["id"], lf=ft["low_f"], fd=ft["date"]: asyncio.ensure_future(
                                     send_notification(
                                         uid, "frost_warning",
-                                        f"Frost Warning: {lf:.0f}\u00b0F",
-                                        f"Temperature dropping to {lf:.0f}\u00b0F on {fd}. Cover tender plants!"
+                                        f"Frost Warning: {lf:.0f}\u00b0C",
+                                        f"Temperature dropping to {lf:.0f}\u00b0C on {fd}. Cover tender plants!"
                                     )
                                 )
                             )
@@ -1225,14 +1225,14 @@ def get_weather_insights(request: Request):
         adjustments.append({
             "type": "heat_wave",
             "action": "Shade cloth task generated",
-            "reason": f"Heat wave: {', '.join(str(t) for t in wx['heat_wave_temps'])}\u00b0F",
+            "reason": f"Heat wave: {', '.join(str(t) for t in wx['heat_wave_temps'])}\u00b0C",
             "temps": wx["heat_wave_temps"],
         })
     if wx["frost_risk"]:
         adjustments.append({
             "type": "frost_risk",
             "action": "Frost protection task generated",
-            "reason": "Frost risk: " + ", ".join(f"{d} {t}\u00b0F" for d, t in wx["frost_risk_temps"]),
+            "reason": "Frost risk: " + ", ".join(f"{d} {t}\u00b0C" for d, t in wx["frost_risk_temps"]),
             "dates": [{"date": d, "low_f": t} for d, t in wx["frost_risk_temps"]],
         })
     if wx["high_wind"]:
@@ -1246,7 +1246,7 @@ def get_weather_insights(request: Request):
         adjustments.append({
             "type": "extreme_heat",
             "action": "All watering tasks marked urgent",
-            "reason": f"Current temperature: {temp_val}\u00b0F",
+            "reason": f"Current temperature: {temp_val}\u00b0C",
         })
 
     return {
@@ -1418,7 +1418,7 @@ def _build_lifecycle_tasks(plant: dict, method: str, start: date,
     if method == "seed":
         # Indoor seed starting sequence
         add("start_seeds", f"Start {plant_name} seeds indoors",
-            f"Plant {plant_name} seeds in seed tray. Keep moist and warm (70-80F).",
+            f"Plant {plant_name} seeds in seed tray. Keep moist and warm (21-27°C).",
             "high", start, t_id=tray_id)
         add("water_seed", f"Water {plant_name} seed tray",
             "Keep soil evenly moist but not waterlogged.", "medium", start, t_id=tray_id)
@@ -1623,7 +1623,7 @@ def create_lifecycle_plan(req: LifecyclePlanRequest):
                 """INSERT INTO plantings (bed_id, plant_id, cell_x, cell_y, planted_date, status, season, year)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (req.target_bed_id, req.plant_id, req.target_cell_x, req.target_cell_y,
-                 planted_date, status, _current_desert_season(), date.today().year),
+                 planted_date, status, _current_season(), date.today().year),
             )
             planting_id = cursor.lastrowid
 
@@ -1666,14 +1666,15 @@ def create_lifecycle_plan(req: LifecyclePlanRequest):
         }
 
 
-def _current_desert_season() -> str:
+def _current_season() -> str:
     month = date.today().month
-    if month >= 10 or month <= 2:
-        return "cool"
-    elif month >= 7:
-        return "monsoon"
-    else:
-        return "warm"
+    if month in (12, 1, 2):
+        return "summer"
+    elif month in (3, 4, 5):
+        return "autumn"
+    elif month in (6, 7, 8):
+        return "winter"
+    return "spring"
 
 
 @router.get("/api/lifecycle/recommend/{plant_id}")
