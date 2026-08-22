@@ -1988,21 +1988,21 @@ export default function SettingsPage() {
           <FieldRow label="Dimensions">
             <div className="flex items-center gap-2">
               <InlineInput
-                value={property.width_feet}
-                onSave={(v) => saveProperty('width_feet', v)}
+                value={Math.round(property.width_feet * 0.3048 * 10) / 10}
+                onSave={(v) => saveProperty('width_feet', Math.round(Number(v) / 0.3048))}
                 type="number"
                 className="!w-24"
-                placeholder="100"
+                placeholder="30"
               />
               <span className="text-earth-400 dark:text-gray-500 text-sm">x</span>
               <InlineInput
-                value={property.height_feet}
-                onSave={(v) => saveProperty('height_feet', v)}
+                value={Math.round(property.height_feet * 0.3048 * 10) / 10}
+                onSave={(v) => saveProperty('height_feet', Math.round(Number(v) / 0.3048))}
                 type="number"
                 className="!w-24"
-                placeholder="80"
+                placeholder="25"
               />
-              <span className="text-earth-400 dark:text-gray-500 text-sm">ft</span>
+              <span className="text-earth-400 dark:text-gray-500 text-sm">m</span>
             </div>
           </FieldRow>
           <FieldRow label="Property Map">

@@ -356,7 +356,7 @@ export default function GroundPlantDetailPage() {
           <div className="text-sm font-medium text-earth-700 dark:text-gray-200">
             {gp.x_feet != null && gp.y_feet != null ? (
               <Link href="/map" className="text-garden-600 dark:text-garden-400 hover:underline">
-                ({gp.x_feet.toFixed(1)}, {gp.y_feet.toFixed(1)}) ft
+                ({(gp.x_feet * 0.3048).toFixed(1)}, {(gp.y_feet * 0.3048).toFixed(1)}) m
               </Link>
             ) : (
               <span className="text-earth-400 dark:text-gray-500">Not placed</span>

@@ -3422,12 +3422,12 @@ export default function BedDetailPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-earth-500 dark:text-gray-400 mb-1">X Position (feet)</label>
+                    <label className="block text-xs text-earth-500 dark:text-gray-400 mb-1">X Position (metres)</label>
                     <input type="number" step="0.5" value={moveGroundX} onChange={(e) => setMoveGroundX(e.target.value)} placeholder="Optional"
                       className="w-full px-3 py-2 border border-earth-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 dark:text-gray-100" />
                   </div>
                   <div>
-                    <label className="block text-xs text-earth-500 dark:text-gray-400 mb-1">Y Position (feet)</label>
+                    <label className="block text-xs text-earth-500 dark:text-gray-400 mb-1">Y Position (metres)</label>
                     <input type="number" step="0.5" value={moveGroundY} onChange={(e) => setMoveGroundY(e.target.value)} placeholder="Optional"
                       className="w-full px-3 py-2 border border-earth-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 outline-none bg-white dark:bg-gray-700 dark:text-gray-100" />
                   </div>

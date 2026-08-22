@@ -86,8 +86,8 @@ export default function SetupPage() {
         setLon(s.property.longitude);
         if (s.property.last_frost_spring) setLastFrost(s.property.last_frost_spring);
         if (s.property.first_frost_fall) setFirstFrost(s.property.first_frost_fall);
-        if (s.property.width_feet) setWidthFeet(String(s.property.width_feet));
-        if (s.property.height_feet) setHeightFeet(String(s.property.height_feet));
+        if (s.property.width_feet) setWidthFeet(String(Math.round(s.property.width_feet * 0.3048 * 10) / 10));
+        if (s.property.height_feet) setHeightFeet(String(Math.round(s.property.height_feet * 0.3048 * 10) / 10));
         const zone = localStorage.getItem('garden-usda-zone');
         if (zone) setUsdaZone(zone);
       }
@@ -159,8 +159,8 @@ export default function SetupPage() {
         address: selectedAddress,
         latitude: lat,
         longitude: lon,
-        width_feet: widthFeet ? parseInt(widthFeet) : undefined,
-        height_feet: heightFeet ? parseInt(heightFeet) : undefined,
+        width_feet: widthFeet ? Math.round(parseInt(widthFeet) / 0.3048) : undefined,
+        height_feet: heightFeet ? Math.round(parseInt(heightFeet) / 0.3048) : undefined,
         last_frost_spring: lastFrost || undefined,
         first_frost_fall: firstFrost || undefined,
         frost_free_days: frostDays || undefined,
@@ -318,7 +318,7 @@ export default function SetupPage() {
             {/* Property dimensions */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div>
-                <label className="block text-sm font-medium text-earth-600 dark:text-gray-300 mb-1">Width (feet)</label>
+                <label className="block text-sm font-medium text-earth-600 dark:text-gray-300 mb-1">Width (metres)</label>
                 <input
                   type="number"
                   value={widthFeet}
@@ -328,7 +328,7 @@ export default function SetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-earth-600 dark:text-gray-300 mb-1">Depth (feet)</label>
+                <label className="block text-sm font-medium text-earth-600 dark:text-gray-300 mb-1">Depth (metres)</label>
                 <input
                   type="number"
                   value={heightFeet}
