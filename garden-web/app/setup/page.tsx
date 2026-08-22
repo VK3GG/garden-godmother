@@ -251,7 +251,7 @@ export default function SetupPage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-earth-200 dark:border-gray-700 shadow-sm p-6">
             <h2 className="text-xl font-bold text-earth-800 dark:text-gray-100 mb-1">Garden Location</h2>
             <p className="text-earth-400 dark:text-gray-500 text-sm mb-6">
-              Your address helps us detect your USDA zone, frost dates, and soil type automatically.
+              Your address helps us detect your climate zone, frost dates, and soil type automatically.
             </p>
 
             {/* Address search */}
@@ -290,7 +290,7 @@ export default function SetupPage() {
               <div className="mb-4 p-3 bg-garden-50 dark:bg-garden-900/20 border border-garden-200 dark:border-garden-800 rounded-lg">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-earth-500 dark:text-gray-400">USDA Zone:</span>{' '}
+                    <span className="text-earth-500 dark:text-gray-400">Climate Zone:</span>{' '}
                     <span className="font-semibold text-garden-700 dark:text-garden-400">{usdaZone}</span>
                   </div>
                   {lastFrost && (
@@ -470,7 +470,7 @@ export default function SetupPage() {
             </h2>
             <p className="text-earth-500 dark:text-gray-400 mb-6 leading-relaxed">
               {usdaZone
-                ? `Set up for USDA Zone ${usdaZone}. `
+                ? `Set up for Climate Zone ${usdaZone}. `
                 : ''}
               You can adjust all settings anytime from the Settings page.
             </p>

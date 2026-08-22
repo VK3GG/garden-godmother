@@ -1349,7 +1349,7 @@ function PlantsPageInner() {
                                 <h5 className="text-sm font-bold text-blue-800 dark:text-blue-300 mb-2">Growing Requirements</h5>
                                 <div className="space-y-1 text-xs text-blue-700 dark:text-blue-400">
                                   {plantDetails.usda_zones && plantDetails.usda_zones.length > 0 && (
-                                    <p><span className="font-semibold">USDA Zones:</span> {plantDetails.usda_zones.join(', ')}</p>
+                                    <p><span className="font-semibold">Climate Zones:</span> {plantDetails.usda_zones.join(', ')}</p>
                                   )}
                                   {plantDetails.soil_type && (
                                     <p><span className="font-semibold">Soil:</span> {plantDetails.soil_type}</p>

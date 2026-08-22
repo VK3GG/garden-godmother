@@ -104,12 +104,132 @@ interface IrrigationZone {
   beds?: string[];
 }
 
-// ─── USDA Zones ───
+// ─── Australian Climate Zones ───
 
 const USDA_ZONES = [
-  '1a','1b','2a','2b','3a','3b','4a','4b','5a','5b',
-  '6a','6b','7a','7b','8a','8b','9a','9b','10a','10b',
-  '11a','11b','12a','12b','13a','13b',
+  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
+  'Semi-Arid', 'Arid', 'Mediterranean',
+];
+
+/** Estimate Australian climate zone from latitude */
+function estimateUsdaZone(lat: number, lon: number): string {
+  // Australian climate zones based on latitude
+  const absLat = Math.abs(lat);
+  if (absLat < 15) return 'Tropical';
+  if (absLat < 25) return 'Subtropical';
+  if (absLat < 30) return 'Semi-Arid';
+  if (absLat < 35) return 'Mediterranean';
+  if (absLat < 40) return 'Temperate';
+  return 'Cool Temperate';
+}useState, useCallback, useRef } from 'react';
+import Link from 'next/link';
+import {
+  getSettings,
+  updateProperty,
+  getExportUrl,
+  getCalendarIcalUrl,
+  getSensorWeather,
+  getSensorRachio,
+  getIrrigationZones,
+  generateTasks,
+  getTasks,
+  geocodeAddress,
+  getFrostDates,
+  getSoilTypes,
+  getBackups,
+  createBackup,
+  restoreBackup,
+  getBackupDownloadUrl,
+  deleteBackup,
+  getUpdateStatus,
+  getMeshtasticStatus,
+  getFederationIdentity,
+  setupFederationIdentity,
+  getFederationPrefs,
+  updateFederationPrefs,
+  getFederationPeers,
+  pairFromQr,
+  API_URL,
+} from '../api';
+import { useToast } from '../toast';
+import { useModal } from '../confirm-modal';
+import { setGardenTimezone, getGardenToday, getGardenYear, formatGardenDateTime } from '../timezone';
+
+// ─── Types ───
+
+interface SettingsData {
+  property: {
+    id: number;
+    name: string;
+    width_feet: number;
+    height_feet: number;
+    orientation_degrees: number;
+    latitude: number;
+    longitude: number;
+    address: string | null;
+    default_soil_type: string | null;
+    default_soil_ph: number | null;
+    default_soil_notes: string | null;
+    last_frost_spring: string | null;
+    first_frost_fall: string | null;
+    frost_free_days: number | null;
+    timezone: string | null;
+  };
+  soil_profile: {
+    default_soil: string;
+    default_ph: number;
+    location: string;
+    characteristics: string[];
+    challenges: string[];
+    notes?: string;
+  };
+  rachio_status: {
+    connected: boolean;
+    controller: string | null;
+    zones: number;
+    valves: number;
+  };
+  weather_status: {
+    connected: boolean;
+    station: string | null;
+    condition: string | null;
+    temperature: number | null;
+    humidity: number | null;
+  };
+  database_stats: {
+    plants: number;
+    varieties: number;
+    enriched: number;
+    planters: number;
+    ground_plants: number;
+    trays: number;
+    journal_entries: number;
+    harvests: number;
+    tasks: number;
+    expenses: number;
+    photos: number;
+  };
+  version: string;
+}
+
+type ThemeMode = 'light' | 'dark' | 'system';
+type FontSize = 'small' | 'medium' | 'large';
+type Spacing = 'compact' | 'comfortable';
+type TempUnit = 'F' | 'C';
+
+interface IrrigationZone {
+  zone_name: string;
+  zone_number?: number;
+  enabled?: boolean;
+  planters?: string[];
+  beds?: string[];
+}
+
+// ─── Australian Climate Zones ───
+
+const USDA_ZONES = [
+  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
+  'Semi-Arid', 'Arid', 'Mediterranean',
 ];
 
 /** Estimate USDA zone from latitude/longitude (US-centric approximation) */
@@ -1804,7 +1924,7 @@ export default function SettingsPage() {
           </FieldRow>
 
           {/* USDA Zone (auto from coords) */}
-          <FieldRow label="USDA Zone">
+          <FieldRow label="Climate Zone">
             <AutoField
               autoValue={autoUsdaZone ? `Zone ${autoUsdaZone}` : null}
               customValue={customUsdaZone ? `Zone ${customUsdaZone}` : null}
@@ -1849,7 +1969,7 @@ export default function SettingsPage() {
           </FieldRow>
 
           {/* Frost Dates (auto from coords) */}
-          <FieldRow label="Last Spring Frost">
+          <FieldRow label="Last Winter Frost">
             <AutoField
               autoValue={autoLastFrost}
               displayValue={autoLastFrost ? formatFrostDate(autoLastFrost) : undefined}
@@ -1875,7 +1995,7 @@ export default function SettingsPage() {
               placeholder="MM-DD"
             />
           </FieldRow>
-          <FieldRow label="First Fall Frost">
+          <FieldRow label="First Autumn Frost">
             <AutoField
               autoValue={autoFirstFrost}
               displayValue={autoFirstFrost ? formatFrostDate(autoFirstFrost) : undefined}
@@ -2003,7 +2123,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2">
               <InlineInput
                 value={property.width_feet}
-                onSave={(v) => saveProperty('width_feet', v)}
+                onSave={(v) => saveProperty('width_feet', v)} // stored in feet, displayed as metres
                 type="number"
                 className="!w-24"
                 placeholder="100"
@@ -2478,7 +2598,7 @@ export default function SettingsPage() {
           </FieldRow>
           <FieldRow label="Location">
             <span className="text-sm text-earth-800 dark:text-gray-200">
-              {soil_profile.location} (USDA Zone {usdaZone})
+              {soil_profile.location} (Climate Zone {usdaZone})
             </span>
           </FieldRow>
         </SettingsCard>
