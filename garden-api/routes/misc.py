@@ -43,39 +43,54 @@ def get_recommendations():
     today = date.today()
     month = today.month
 
-    # Determine current desert season
-    if month in (10, 11, 12, 1, 2, 3):
-        current_season = "cool"
-        season_label = "Cool Season (Oct-Mar)"
-    elif month in (4, 5, 6):
-        current_season = "warm"
-        season_label = "Warm Season (Apr-Jun)"
+    # Determine current season (Southern Hemisphere - temperate Australia)
+    if month in (12, 1, 2):
+        current_season = "summer"
+        season_label = "Summer (Dec-Feb)"
+    elif month in (3, 4, 5):
+        current_season = "autumn"
+        season_label = "Autumn (Mar-May)"
+    elif month in (6, 7, 8):
+        current_season = "winter"
+        season_label = "Winter (Jun-Aug)"
     else:
-        current_season = "monsoon"
-        season_label = "Monsoon/Hot Season (Jul-Sep)"
+        current_season = "spring"
+        season_label = "Spring (Sep-Nov)"
 
     plantable = whats_plantable_now()
 
     tips = []
-    if current_season == "cool":
+    if current_season == "summer":
         tips = [
-            "Prime growing season in the desert — most crops thrive now",
-            "Watch for unexpected frost — have frost cloth ready",
-            "Succession plant lettuce and radish every 2-3 weeks",
+            "Hot and dry — water deeply in early morning before heat builds",
+            "Mulch heavily to retain soil moisture and keep roots cool",
+            "Great time for tomatoes, beans, zucchini, and basil",
+            "Watch for heat stress — install shade cloth for sensitive plants",
+            "Succession plant leafy greens in a shaded spot",
         ]
-    elif current_season == "warm":
+    elif current_season == "autumn":
         tips = [
-            "Last chance for warm-season crops before extreme heat",
-            "Install shade cloth (50%) for heat-sensitive plants",
-            "Mulch heavily to retain soil moisture",
-            "Water deeply in early morning — avoid evening watering",
+            "Excellent planting season — temperatures are cooling down",
+            "Plant brassicas: broccoli, cauliflower, cabbage, kale",
+            "Sow winter crops: peas, broad beans, spinach, silverbeet",
+            "Great time to plant garlic and onions",
+            "Reduce watering frequency as temperatures drop",
+        ]
+    elif current_season == "winter":
+        tips = [
+            "Cool season crops thrive now — lettuce, spinach, peas, broad beans",
+            "Watch for frost in cold snaps — have frost cloth ready",
+            "Plant bare-rooted fruit trees and roses",
+            "Good time to improve soil with compost and manure",
+            "Minimal watering needed — check soil moisture before watering",
         ]
     else:
         tips = [
-            "Extreme heat limits most planting — focus on peppers, eggplant, basil",
-            "Monsoon rains can help but watch for root rot",
-            "Start planning your fall cool-season garden now",
-            "Order seeds for Sep-Oct planting",
+            "Prime planting season — most vegetables thrive in spring warmth",
+            "Start tomato, capsicum, and eggplant seedlings now",
+            "Plant potatoes, sweet corn, and cucumber",
+            "Watch for spring pests — aphids and caterpillars are active",
+            "Succession plant lettuce and radish every 2-3 weeks",
         ]
 
     return {
@@ -91,19 +106,22 @@ def get_recommendations():
 # ──────────────── SHOPPING LIST ────────────────
 
 SEASON_MONTHS = {
-    "cool": [10, 11, 12, 1, 2, 3],
-    "warm": [4, 5, 6],
-    "monsoon": [7, 8, 9],
+    "summer": [12, 1, 2],
+    "autumn": [3, 4, 5],
+    "winter": [6, 7, 8],
+    "spring": [9, 10, 11],
 }
 
 
-def _current_desert_season() -> str:
+def _current_season() -> str:
     month = date.today().month
-    if month in (10, 11, 12, 1, 2, 3):
-        return "cool"
-    elif month in (4, 5, 6):
-        return "warm"
-    return "monsoon"
+    if month in (12, 1, 2):
+        return "summer"
+    elif month in (3, 4, 5):
+        return "autumn"
+    elif month in (6, 7, 8):
+        return "winter"
+    return "spring"
 
 
 @router.get("/api/shopping-list")
@@ -207,10 +225,10 @@ def get_shopping_list():
 
 @router.get("/api/shopping-list/season/{season}")
 def get_season_shopping_list(season: str):
-    """Generate a shopping list for a specific season (cool/warm/monsoon)."""
+    """Generate a shopping list for a specific season (summer/autumn/winter/spring)."""
     season = season.lower()
     if season not in SEASON_MONTHS:
-        raise HTTPException(400, f"Invalid season. Must be one of: cool, warm, monsoon")
+        raise HTTPException(400, f"Invalid season. Must be one of: summer, autumn, winter, spring")
 
     with get_db() as db:
         # All plants for this season
@@ -266,7 +284,7 @@ def get_season_shopping_list(season: str):
                     "varieties": [],
                 })
 
-        season_labels = {"cool": "Cool Season (Oct-Mar)", "warm": "Warm Season (Apr-Jun)", "monsoon": "Monsoon Season (Jul-Sep)"}
+        season_labels = {"summer": "Summer (Dec-Feb)", "autumn": "Autumn (Mar-May)", "winter": "Winter (Jun-Aug)", "spring": "Spring (Sep-Nov)"}
 
     return {
         "season": season,
@@ -1624,8 +1642,8 @@ def get_bed_history(bed_id: int):
 def get_season_history(year: int, season: str):
     """Season report: all plantings, yields, failures, lessons."""
     season = season.lower()
-    if season not in ("cool", "warm", "monsoon"):
-        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
+    if season not in ("summer", "autumn", "winter", "spring"):
+        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
 
     with get_db() as db:
         plantings = db.execute("""
@@ -1771,7 +1789,7 @@ def get_history_summary():
         busiest_month = int(busiest["month"]) if busiest else None
 
         summaries = db.execute(
-            "SELECT * FROM season_summaries ORDER BY year DESC, CASE season WHEN 'cool' THEN 1 WHEN 'warm' THEN 2 WHEN 'monsoon' THEN 3 END"
+            "SELECT * FROM season_summaries ORDER BY year DESC, CASE season WHEN 'summer' THEN 1 WHEN 'autumn' THEN 2 WHEN 'winter' THEN 3 WHEN 'spring' THEN 4 END"
         ).fetchall()
         season_summaries = [dict(r) for r in summaries]
 
@@ -1794,8 +1812,8 @@ def get_history_summary():
 @router.post("/api/history/season-summary")
 def create_or_update_season_summary(data: SeasonSummaryCreate):
     """Generate/update a season summary. Auto-calculates from planting data if fields are omitted."""
-    if data.season not in ("cool", "warm", "monsoon"):
-        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
+    if data.season not in ("summer", "autumn", "winter", "spring"):
+        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
 
     with get_db() as db:
         plantings = db.execute(
@@ -2433,7 +2451,7 @@ def _generate_soil_recommendations(soil_type: str, soil_ph_min: float, soil_ph_m
         watering_adjustments.append("Water deeply but less frequently — clay retains moisture")
         watering_adjustments.append("Avoid overhead watering to prevent compaction")
         growth_challenges.append("Root growth restricted by heavy clay and possible caliche layer")
-        growth_challenges.append("Drainage is poor — root rot risk in monsoon season")
+        growth_challenges.append("Drainage is poor — root rot risk in wet season")
         amendments_needed.append("Mix 4-6 inches of compost into planting area")
         amendments_needed.append("Add gypsum to improve clay structure")
     elif soil_type in ("native-amended", "amended_native"):
@@ -2445,10 +2463,10 @@ def _generate_soil_recommendations(soil_type: str, soil_ph_min: float, soil_ph_m
         growth_challenges.append("Low nutrient retention")
         amendments_needed.append("Add compost to improve water and nutrient retention")
     elif soil_type in ("raised-bed-mix", "raised_bed_mix"):
-        watering_adjustments.append("Raised beds dry faster in desert heat — check moisture daily in summer")
+        watering_adjustments.append("Raised beds dry faster in summer heat — check moisture daily in summer")
         compatibility_notes.append("Raised bed mix provides good drainage and neutral pH — suitable for most plants")
     elif soil_type in ("potting-soil", "potting_mix"):
-        watering_adjustments.append("Containers dry out quickly in desert heat — may need twice-daily watering in summer")
+        watering_adjustments.append("Containers dry out quickly in summer heat — may need twice-daily watering in summer")
         watering_adjustments.append("Use self-watering containers or drip irrigation")
         compatibility_notes.append("Potting mix pH is easily adjustable")
     elif soil_type == "cactus_succulent_mix":
@@ -3182,7 +3200,7 @@ def yield_comparison():
             LEFT JOIN harvests h ON h.planting_id = p.id
             WHERE p.year IS NOT NULL AND p.season IS NOT NULL
             GROUP BY p.year, p.season
-            ORDER BY p.year DESC, CASE p.season WHEN 'cool' THEN 1 WHEN 'warm' THEN 2 WHEN 'monsoon' THEN 3 END
+            ORDER BY p.year DESC, CASE p.season WHEN 'summer' THEN 1 WHEN 'autumn' THEN 2 WHEN 'winter' THEN 3 WHEN 'spring' THEN 4 END
         """).fetchall()
         by_season = []
         for r in by_season_rows:
@@ -3215,8 +3233,8 @@ def yield_comparison():
 def season_review(year: int = Query(...), season: str = Query(...)):
     """Generate a season review with grades, what worked, what didn't, recommendations."""
     season = season.lower()
-    if season not in ("cool", "warm", "monsoon"):
-        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
+    if season not in ("summer", "autumn", "winter", "spring"):
+        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
 
     with get_db() as db:
         plantings = db.execute("""
