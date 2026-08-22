@@ -246,12 +246,12 @@ def update_frost_date_settings(request: Request, data: FrostDateUpdate):
 
 
 
-@router.put("/api/settings/usda-zone")
+@router.put("/api/settings/climate-zone")
 def update_usda_zone(request: Request, data: UsdaZoneUpdate):
-    """Save USDA zone to app_config."""
+    """Save Australian climate zone to app_config."""
     require_admin(request)
     with get_db() as db:
-        db.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES ('usda_zone', ?)", (data.zone,))
+        db.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES ('usda_zone', ?)", (data.zone,))  # key kept for DB compatibility
         user = getattr(request.state, 'user', None)
         if user:
             audit_log(db, user['id'], 'update', 'setting', None,

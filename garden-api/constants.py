@@ -349,7 +349,7 @@ DEFAULT_SOIL_PROFILE = {
         {"name": "Mycorrhizal inoculant", "purpose": "Helps roots access nutrients in challenging soil"},
     ],
     "notes": "This is a generic soil profile. Configure your property address in Settings to get "
-             "location-aware soil recommendations, frost dates, and USDA zone detection.",
+             "location-aware soil recommendations, frost dates, and Australian climate zone detection.",
 }
 
 # Legacy alias for backward compatibility (deprecated — use DEFAULT_SOIL_PROFILE)
@@ -427,7 +427,7 @@ def _get_configured_timezone() -> str:
 
 
 def _get_configured_zone() -> str:
-    """Return the configured USDA zone string, or 'Not set' if unknown."""
+    """Return the configured Australian climate zone string, or 'Not set' if unknown."""
     try:
         with get_db() as db:
             row = db.execute("SELECT value FROM app_config WHERE key = 'usda_zone'").fetchone()
