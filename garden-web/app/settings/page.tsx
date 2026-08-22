@@ -33,6 +33,21 @@ import {
 import { useToast } from '../toast';
 import { useModal } from '../confirm-modal';
 import { setGardenTimezone, getGardenToday, getGardenYear, formatGardenDateTime } from '../timezone';
+// ─── Australian Climate Zones ───
+const USDA_ZONES = [
+  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
+  'Semi-Arid', 'Arid', 'Mediterranean',
+];
+/** Estimate Australian climate zone from latitude */
+function estimateUsdaZone(lat: number, lon: number): string {
+  const absLat = Math.abs(lat);
+  if (absLat < 15) return 'Tropical';
+  if (absLat < 25) return 'Subtropical';
+  if (absLat < 30) return 'Semi-Arid';
+  if (absLat < 35) return 'Mediterranean';
+  if (absLat < 40) return 'Temperate';
+  return 'Cool Temperate';
+}
 
 // ─── Types ───
 
@@ -154,6 +169,21 @@ import {
 import { useToast } from '../toast';
 import { useModal } from '../confirm-modal';
 import { setGardenTimezone, getGardenToday, getGardenYear, formatGardenDateTime } from '../timezone';
+// ─── Australian Climate Zones ───
+const USDA_ZONES = [
+  'Temperate', 'Cool Temperate', 'Subtropical', 'Tropical',
+  'Semi-Arid', 'Arid', 'Mediterranean',
+];
+/** Estimate Australian climate zone from latitude */
+function estimateUsdaZone(lat: number, lon: number): string {
+  const absLat = Math.abs(lat);
+  if (absLat < 15) return 'Tropical';
+  if (absLat < 25) return 'Subtropical';
+  if (absLat < 30) return 'Semi-Arid';
+  if (absLat < 35) return 'Mediterranean';
+  if (absLat < 40) return 'Temperate';
+  return 'Cool Temperate';
+}
 
 // ─── Types ───
 
