@@ -28,6 +28,7 @@ from constants import (
 )
 from services.integrations import get_openai_key, get_ha_config, get_plantbook_config, get_integration_config
 from routes.calendar import whats_plantable_now
+from plant_knowledge import get_knowledge, generate_seed_sources, calculate_data_quality, PLANT_KNOWLEDGE
 from routes.sensors import (
     _ha_is_configured, _ha_get_states_bulk, _safe_float,
     WEATHER_SENSORS, WEATHER_ENTITY, MOISTURE_SENSORS,
