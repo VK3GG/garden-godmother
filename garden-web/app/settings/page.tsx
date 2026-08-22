@@ -1989,7 +1989,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2">
               <InlineInput
                 value={Math.round(property.width_feet * 0.3048 * 10) / 10}
-                onSave={(v) => saveProperty('width_feet', Math.round(Number(v) / 0.3048))}
+                onSave={(v) => saveProperty('width_feet', String(Math.round(Number(v) / 0.3048)))}
                 type="number"
                 className="!w-24"
                 placeholder="30"
@@ -1997,7 +1997,7 @@ export default function SettingsPage() {
               <span className="text-earth-400 dark:text-gray-500 text-sm">x</span>
               <InlineInput
                 value={Math.round(property.height_feet * 0.3048 * 10) / 10}
-                onSave={(v) => saveProperty('height_feet', Math.round(Number(v) / 0.3048))}
+                onSave={(v) => saveProperty('height_feet', String(Math.round(Number(v) / 0.3048)))}
                 type="number"
                 className="!w-24"
                 placeholder="25"
