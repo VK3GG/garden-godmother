@@ -29,11 +29,11 @@ def plant_stats():
         by_category = {r["category"]: r["cnt"] for r in cats}
 
         # seasons stored as JSON array, need to unpack
-        all_plants = db.execute("SELECT desert_seasons FROM plants").fetchall()
+        all_plants = db.execute("SELECT aus_seasons FROM plants").fetchall()
         by_season: dict[str, int] = {}
         for row in all_plants:
-            if row["desert_seasons"]:
-                for s in json.loads(row["desert_seasons"]):
+            if row["aus_seasons"]:
+                for s in json.loads(row["aus_seasons"]):
                     by_season[s] = by_season.get(s, 0) + 1
 
         ht = db.execute("SELECT heat_tolerance, COUNT(*) as cnt FROM plants WHERE heat_tolerance IS NOT NULL GROUP BY heat_tolerance").fetchall()
@@ -110,7 +110,7 @@ def list_plants(
             conditions.append("p.category = ?")
             params.append(category)
         if season:
-            conditions.append("p.desert_seasons LIKE ?")
+            conditions.append("p.aus_seasons LIKE ?")
             params.append(f'%"{season}"%')
         if sun:
             conditions.append("p.sun = ?")

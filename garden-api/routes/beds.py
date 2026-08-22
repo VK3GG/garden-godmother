@@ -585,7 +585,7 @@ def get_bed(bed_id: int):
             raise HTTPException(404, "Bed not found")
         plantings = db.execute("""
             SELECT p.*, pl.name as plant_name, pl.category as plant_category,
-                   v.name as variety_name, v.desert_rating as variety_desert_rating
+                   v.name as variety_name, v.aus_rating as variety_aus_rating
             FROM plantings p
             JOIN plants pl ON p.plant_id = pl.id
             LEFT JOIN varieties v ON p.variety_id = v.id
@@ -607,7 +607,7 @@ def get_bed_grid(bed_id: int):
         plantings = db.execute("""
             SELECT p.*, pl.name as plant_name, pl.category as plant_category,
                    pl.spacing_inches, pl.sun, pl.water,
-                   v.name as variety_name, v.desert_rating as variety_desert_rating
+                   v.name as variety_name, v.aus_rating as variety_aus_rating
             FROM plantings p
             JOIN plants pl ON p.plant_id = pl.id
             LEFT JOIN varieties v ON p.variety_id = v.id
@@ -642,7 +642,7 @@ def get_bed_grid(bed_id: int):
                     "photo_count": photo_counts.get(p["id"], 0),
                     "variety_id": p.get("variety_id"),
                     "variety_name": p.get("variety_name"),
-                    "variety_desert_rating": p.get("variety_desert_rating"),
+                    "variety_aus_rating": p.get("variety_aus_rating"),
                     "cell_role": p.get("cell_role", "primary"),
                     "companion_of": p.get("companion_of"),
                     "position_x_inches": p.get("position_x_inches"),
@@ -670,7 +670,7 @@ def get_bed_grid(bed_id: int):
                     "photo_count": photo_counts.get(p["id"], 0),
                     "variety_id": p.get("variety_id"),
                     "variety_name": p.get("variety_name"),
-                    "variety_desert_rating": p.get("variety_desert_rating"),
+                    "variety_aus_rating": p.get("variety_aus_rating"),
                     "cell_role": p.get("cell_role", "primary"),
                     "companion_of": p.get("companion_of"),
                 }

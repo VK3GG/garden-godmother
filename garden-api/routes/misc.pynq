@@ -43,7 +43,7 @@ def get_recommendations():
     today = date.today()
     month = today.month
 
-    # Determine current season (Southern Hemisphere - temperate Australia)
+# Determine current season (Southern Hemisphere - temperate Australia)
     if month in (12, 1, 2):
         current_season = "summer"
         season_label = "Summer (Dec-Feb)"
@@ -59,7 +59,7 @@ def get_recommendations():
 
     plantable = whats_plantable_now()
 
-    tips = []
+tips = []
     if current_season == "summer":
         tips = [
             "Hot and dry — water deeply in early morning before heat builds",
@@ -84,7 +84,7 @@ def get_recommendations():
             "Good time to improve soil with compost and manure",
             "Minimal watering needed — check soil moisture before watering",
         ]
-    else:
+    else:  # spring
         tips = [
             "Prime planting season — most vegetables thrive in spring warmth",
             "Start tomato, capsicum, and eggplant seedlings now",
@@ -92,7 +92,6 @@ def get_recommendations():
             "Watch for spring pests — aphids and caterpillars are active",
             "Succession plant lettuce and radish every 2-3 weeks",
         ]
-
     return {
         "date": today.isoformat(),
         "season": current_season,
@@ -122,7 +121,6 @@ def _current_season() -> str:
     elif month in (6, 7, 8):
         return "winter"
     return "spring"
-
 
 @router.get("/api/shopping-list")
 def get_shopping_list():
@@ -225,16 +223,16 @@ def get_shopping_list():
 
 @router.get("/api/shopping-list/season/{season}")
 def get_season_shopping_list(season: str):
-    """Generate a shopping list for a specific season (summer/autumn/winter/spring)."""
+    """Generate a shopping list for a specific season (cool/warm/monsoon)."""
     season = season.lower()
     if season not in SEASON_MONTHS:
-        raise HTTPException(400, f"Invalid season. Must be one of: summer, autumn, winter, spring")
+        raise HTTPException(400, f"Invalid season. Must be one of: cool, warm, monsoon")
 
     with get_db() as db:
         # All plants for this season
         rows = db.execute("""
             SELECT * FROM plants
-            WHERE aus_seasons LIKE ?
+            WHERE desert_seasons LIKE ?
             ORDER BY name
         """, (f'%"{season}"%',)).fetchall()
         season_plants = [row_to_dict(r) for r in rows]
@@ -284,8 +282,7 @@ def get_season_shopping_list(season: str):
                     "varieties": [],
                 })
 
-        season_labels = {"summer": "Summer (Dec-Feb)", "autumn": "Autumn (Mar-May)", "winter": "Winter (Jun-Aug)", "spring": "Spring (Sep-Nov)"}
-
+   Useason_labels = {"summer": "Summer (Dec-Feb)", "autumn": "Autumn (Mar-May)", "winter": "Winter (Jun-Aug)", "spring": "Spring (Sep-Nov)"}
     return {
         "season": season,
         "season_label": season_labels[season],
@@ -738,7 +735,7 @@ def _is_plantable_now(plant: dict) -> list[str]:
     today = date.today()
     actions = []
 
-    sow = plant.get("aus_sow_outdoor")
+    sow = plant.get("desert_sow_outdoor")
     if sow:
         start = parse_md(sow[0])
         end = parse_md(sow[1])
@@ -749,7 +746,7 @@ def _is_plantable_now(plant: dict) -> list[str]:
             if today >= start or today <= end:
                 actions.append("direct_sow")
 
-    trans = plant.get("aus_transplant")
+    trans = plant.get("desert_transplant")
     if trans:
         start = parse_md(trans[0])
         end = parse_md(trans[1])
@@ -1025,7 +1022,7 @@ def quick_suggestions():
     def _indoor_start_window(plant):
         """Return (in_window: bool, days_remaining: int|None) for indoor seed start."""
         weeks_before = plant.get("sow_indoor_weeks_before_transplant")
-        trans_raw = plant.get("aus_transplant")
+        trans_raw = plant.get("desert_transplant")
         if not weeks_before or not trans_raw:
             return False, None
         try:
@@ -1081,20 +1078,20 @@ def quick_suggestions():
         ).fetchall()
         seed_inventory = {r["plant_id"]: r["total"] for r in seed_rows}
 
-        # Desert ratings: plant_id -> max aus_rating among varieties
+        # Desert ratings: plant_id -> max desert_rating among varieties
         variety_rows = db.execute(
-            "SELECT plant_id, MAX(aus_rating) as max_rating FROM varieties GROUP BY plant_id"
+            "SELECT plant_id, MAX(desert_rating) as max_rating FROM varieties GROUP BY plant_id"
         ).fetchall()
-        aus_ratings = {r["plant_id"]: r["max_rating"] for r in variety_rows}
+        desert_ratings = {r["plant_id"]: r["max_rating"] for r in variety_rows}
 
         # Best variety name per plant (for display)
         best_variety_rows = db.execute(
-            "SELECT plant_id, name, aus_rating FROM varieties WHERE aus_rating >= 4 ORDER BY aus_rating DESC"
+            "SELECT plant_id, name, desert_rating FROM varieties WHERE desert_rating >= 4 ORDER BY desert_rating DESC"
         ).fetchall()
         best_variety_name = {}
         for r in best_variety_rows:
             if r["plant_id"] not in best_variety_name:
-                best_variety_name[r["plant_id"]] = (r["name"], r["aus_rating"])
+                best_variety_name[r["plant_id"]] = (r["name"], r["desert_rating"])
 
         # Harvestable info from plant_details
         harvestable_rows = db.execute(
@@ -1109,8 +1106,8 @@ def quick_suggestions():
             reasons = []
 
             # --- 1. Timeliness (0-40 points with urgency bonus) ---
-            sow_window = plant.get("aus_sow_outdoor")
-            trans_window = plant.get("aus_transplant")
+            sow_window = plant.get("desert_sow_outdoor")
+            trans_window = plant.get("desert_transplant")
 
             sow_remaining = _window_days_remaining(sow_window)
             trans_remaining = _window_days_remaining(trans_window)
@@ -1172,7 +1169,7 @@ def quick_suggestions():
                 reasons.append("Haven't grown this year")
 
             # --- 4. Desert rating (0-10 points) ---
-            max_rating = aus_ratings.get(pid)
+            max_rating = desert_ratings.get(pid)
             if max_rating and max_rating >= 4:
                 score += 10
                 vname, vrating = best_variety_name.get(pid, (None, None))
@@ -1250,14 +1247,14 @@ def list_plant_varieties(plant_id: int):
         if not plant:
             raise HTTPException(404, "Plant not found")
         rows = db.execute(
-            "SELECT * FROM varieties WHERE plant_id = ? ORDER BY aus_rating DESC, name",
+            "SELECT * FROM varieties WHERE plant_id = ? ORDER BY desert_rating DESC, name",
             (plant_id,),
         ).fetchall()
         return {"plant_id": plant_id, "plant_name": plant["name"], "varieties": [dict(r) for r in rows]}
 
 
 @router.get("/api/varieties")
-def list_varieties(plant_id: Optional[int] = None, aus_rating_min: Optional[int] = None):
+def list_varieties(plant_id: Optional[int] = None, desert_rating_min: Optional[int] = None):
     """List all varieties with optional filters."""
     with get_db() as db:
         query = """
@@ -1270,29 +1267,29 @@ def list_varieties(plant_id: Optional[int] = None, aus_rating_min: Optional[int]
         if plant_id is not None:
             conditions.append("v.plant_id = ?")
             params.append(plant_id)
-        if aus_rating_min is not None:
-            conditions.append("v.aus_rating >= ?")
-            params.append(aus_rating_min)
+        if desert_rating_min is not None:
+            conditions.append("v.desert_rating >= ?")
+            params.append(desert_rating_min)
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
-        query += " ORDER BY v.aus_rating DESC, p.name, v.name"
+        query += " ORDER BY v.desert_rating DESC, p.name, v.name"
         rows = db.execute(query, params).fetchall()
         return [dict(r) for r in rows]
 
 
 @router.get("/api/varieties/recommended")
 def recommended_varieties():
-    """Top desert-rated varieties (aus_rating >= 4) that are plantable now."""
+    """Top desert-rated varieties (desert_rating >= 4) that are plantable now."""
     today = date.today()
     with get_db() as db:
         # Get all high-rated varieties with their plant data
         rows = db.execute("""
             SELECT v.*, p.name as plant_name, p.category as plant_category,
-                   p.aus_sow_outdoor, p.aus_transplant, p.aus_seasons
+                   p.desert_sow_outdoor, p.desert_transplant, p.desert_seasons
             FROM varieties v
             JOIN plants p ON v.plant_id = p.id
-            WHERE v.aus_rating >= 4
-            ORDER BY v.aus_rating DESC, p.name, v.name
+            WHERE v.desert_rating >= 4
+            ORDER BY v.desert_rating DESC, p.name, v.name
         """).fetchall()
 
         results = []
@@ -1300,7 +1297,7 @@ def recommended_varieties():
             r = dict(row)
             # Check if parent plant is plantable now
             actions = []
-            sow = r.get("aus_sow_outdoor")
+            sow = r.get("desert_sow_outdoor")
             if sow:
                 sow = json.loads(sow)
                 start = parse_md(sow[0])
@@ -1312,7 +1309,7 @@ def recommended_varieties():
                     if today >= start or today <= end:
                         actions.append("direct_sow")
 
-            trans = r.get("aus_transplant")
+            trans = r.get("desert_transplant")
             if trans:
                 trans = json.loads(trans)
                 start = parse_md(trans[0])
@@ -1326,7 +1323,7 @@ def recommended_varieties():
 
             if actions:
                 # Remove raw plant fields, keep variety data
-                for key in ("aus_sow_outdoor", "aus_transplant", "aus_seasons"):
+                for key in ("desert_sow_outdoor", "desert_transplant", "desert_seasons"):
                     r.pop(key, None)
                 r["plantable_actions"] = actions
                 results.append(r)
@@ -1642,8 +1639,8 @@ def get_bed_history(bed_id: int):
 def get_season_history(year: int, season: str):
     """Season report: all plantings, yields, failures, lessons."""
     season = season.lower()
-    if season not in ("summer", "autumn", "winter", "spring"):
-        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
+    if season not in ("cool", "warm", "monsoon"):
+        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
 
     with get_db() as db:
         plantings = db.execute("""
@@ -1789,7 +1786,7 @@ def get_history_summary():
         busiest_month = int(busiest["month"]) if busiest else None
 
         summaries = db.execute(
-            "SELECT * FROM season_summaries ORDER BY year DESC, CASE season WHEN 'summer' THEN 1 WHEN 'autumn' THEN 2 WHEN 'winter' THEN 3 WHEN 'spring' THEN 4 END"
+            "SELECT * FROM season_summaries ORDER BY year DESC, CASE season WHEN 'cool' THEN 1 WHEN 'warm' THEN 2 WHEN 'monsoon' THEN 3 END"
         ).fetchall()
         season_summaries = [dict(r) for r in summaries]
 
@@ -1812,8 +1809,8 @@ def get_history_summary():
 @router.post("/api/history/season-summary")
 def create_or_update_season_summary(data: SeasonSummaryCreate):
     """Generate/update a season summary. Auto-calculates from planting data if fields are omitted."""
-    if data.season not in ("summer", "autumn", "winter", "spring"):
-        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
+    if data.season not in ("cool", "warm", "monsoon"):
+        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
 
     with get_db() as db:
         plantings = db.execute(
@@ -2451,7 +2448,7 @@ def _generate_soil_recommendations(soil_type: str, soil_ph_min: float, soil_ph_m
         watering_adjustments.append("Water deeply but less frequently — clay retains moisture")
         watering_adjustments.append("Avoid overhead watering to prevent compaction")
         growth_challenges.append("Root growth restricted by heavy clay and possible caliche layer")
-        growth_challenges.append("Drainage is poor — root rot risk in wet season")
+        growth_challenges.append("Drainage is poor — root rot risk in monsoon season")
         amendments_needed.append("Mix 4-6 inches of compost into planting area")
         amendments_needed.append("Add gypsum to improve clay structure")
     elif soil_type in ("native-amended", "amended_native"):
@@ -2463,10 +2460,10 @@ def _generate_soil_recommendations(soil_type: str, soil_ph_min: float, soil_ph_m
         growth_challenges.append("Low nutrient retention")
         amendments_needed.append("Add compost to improve water and nutrient retention")
     elif soil_type in ("raised-bed-mix", "raised_bed_mix"):
-        watering_adjustments.append("Raised beds dry faster in summer heat — check moisture daily in summer")
+        watering_adjustments.append("Raised beds dry faster in desert heat — check moisture daily in summer")
         compatibility_notes.append("Raised bed mix provides good drainage and neutral pH — suitable for most plants")
     elif soil_type in ("potting-soil", "potting_mix"):
-        watering_adjustments.append("Containers dry out quickly in summer heat — may need twice-daily watering in summer")
+        watering_adjustments.append("Containers dry out quickly in desert heat — may need twice-daily watering in summer")
         watering_adjustments.append("Use self-watering containers or drip irrigation")
         compatibility_notes.append("Potting mix pH is easily adjustable")
     elif soil_type == "cactus_succulent_mix":
@@ -2764,15 +2761,15 @@ def export_plants(format: str = "json"):
         rows = db.execute("""
             SELECT id, name, category, subcategory, days_to_maturity_min,
                    days_to_maturity_max, spacing_inches, sun, water,
-                   heat_tolerance, cold_tolerance, aus_seasons,
-                   sow_indoor_weeks_before_transplant, aus_sow_outdoor,
-                   aus_transplant, notes
+                   heat_tolerance, cold_tolerance, desert_seasons,
+                   sow_indoor_weeks_before_transplant, desert_sow_outdoor,
+                   desert_transplant, notes
             FROM plants ORDER BY name
         """).fetchall()
         data = []
         for r in rows:
             d = dict(r)
-            for key in ("aus_seasons", "aus_sow_outdoor", "aus_transplant"):
+            for key in ("desert_seasons", "desert_sow_outdoor", "desert_transplant"):
                 if d.get(key) and isinstance(d[key], str):
                     try:
                         d[key] = json.loads(d[key])
@@ -3200,7 +3197,7 @@ def yield_comparison():
             LEFT JOIN harvests h ON h.planting_id = p.id
             WHERE p.year IS NOT NULL AND p.season IS NOT NULL
             GROUP BY p.year, p.season
-            ORDER BY p.year DESC, CASE p.season WHEN 'summer' THEN 1 WHEN 'autumn' THEN 2 WHEN 'winter' THEN 3 WHEN 'spring' THEN 4 END
+            ORDER BY p.year DESC, CASE p.season WHEN 'cool' THEN 1 WHEN 'warm' THEN 2 WHEN 'monsoon' THEN 3 END
         """).fetchall()
         by_season = []
         for r in by_season_rows:
@@ -3233,8 +3230,8 @@ def yield_comparison():
 def season_review(year: int = Query(...), season: str = Query(...)):
     """Generate a season review with grades, what worked, what didn't, recommendations."""
     season = season.lower()
-    if season not in ("summer", "autumn", "winter", "spring"):
-        raise HTTPException(400, "Invalid season. Must be summer, autumn, winter, or spring.")
+    if season not in ("cool", "warm", "monsoon"):
+        raise HTTPException(400, "Invalid season. Must be cool, warm, or monsoon.")
 
     with get_db() as db:
         plantings = db.execute("""

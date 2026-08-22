@@ -40,7 +40,7 @@ def whats_plantable_now():
             actions = []
 
             # Check if we can sow outdoors now
-            sow = plant.get("desert_sow_outdoor")
+            sow = plant.get("aus_sow_outdoor")
             if sow:
                 start = parse_md(sow[0])
                 end = parse_md(sow[1])
@@ -53,7 +53,7 @@ def whats_plantable_now():
                         actions.append("direct_sow")
 
             # Check if we can transplant now
-            trans = plant.get("desert_transplant")
+            trans = plant.get("aus_transplant")
             if trans:
                 start = parse_md(trans[0])
                 end = parse_md(trans[1])
@@ -74,7 +74,7 @@ def whats_plantable_now():
                     actions.append("start_seeds_indoors")
 
             # Check if currently harvestable (only for harvestable plants)
-            harv = plant.get("desert_harvest")
+            harv = plant.get("aus_harvest")
             if harv:
                 is_h, ss, _ = _get_harvest_flags(plant["name"], plant["category"], plant.get("subcategory", ""))
                 if is_h:
@@ -113,7 +113,7 @@ def plant_calendar(plant_id: int, year: int = None):
 
     events = []
 
-    sow = plant.get("desert_sow_outdoor")
+    sow = plant.get("aus_sow_outdoor")
     if sow:
         events.append({
             "type": "direct_sow",
@@ -122,7 +122,7 @@ def plant_calendar(plant_id: int, year: int = None):
             "label": f"Direct sow {plant['name']}",
         })
 
-    trans = plant.get("desert_transplant")
+    trans = plant.get("aus_transplant")
     if trans:
         events.append({
             "type": "transplant",
@@ -142,7 +142,7 @@ def plant_calendar(plant_id: int, year: int = None):
             "label": f"Start {plant['name']} seeds indoors",
         })
 
-    harv = plant.get("desert_harvest")
+    harv = plant.get("aus_harvest")
     is_h, ss, sd = _get_harvest_flags(plant["name"], plant["category"], plant.get("subcategory", ""))
     if harv:
         if is_h:
@@ -190,7 +190,7 @@ def month_calendar(month: int, year: int = None):
             plant = row_to_dict(row)
             events = []
 
-            sow = plant.get("desert_sow_outdoor")
+            sow = plant.get("aus_sow_outdoor")
             if sow:
                 try:
                     s = parse_md(sow[0], year)
@@ -204,7 +204,7 @@ def month_calendar(month: int, year: int = None):
                 except ValueError:
                     pass
 
-            trans = plant.get("desert_transplant")
+            trans = plant.get("aus_transplant")
             if trans:
                 try:
                     s = parse_md(trans[0], year)
@@ -218,7 +218,7 @@ def month_calendar(month: int, year: int = None):
                 except ValueError:
                     pass
 
-            harv = plant.get("desert_harvest")
+            harv = plant.get("aus_harvest")
             if harv:
                 try:
                     s = parse_md(harv[0], year)
@@ -347,7 +347,7 @@ def personal_calendar(months: int = 3):
             plant_row = db.execute("SELECT * FROM plants WHERE id = ?", (r["plant_id"],)).fetchone()
             if plant_row:
                 plant = row_to_dict(plant_row)
-                sow = plant.get("desert_sow_outdoor")
+                sow = plant.get("aus_sow_outdoor")
                 if sow:
                     try:
                         s = parse_md(sow[0], year)
@@ -484,7 +484,7 @@ def personal_calendar(months: int = 3):
         # ── 4. Seed inventory → planting opportunities ──
         seeds = db.execute("""
             SELECT si.*, pl.name as plant_name, pl.id as ref_plant_id, pl.category,
-                   pl.desert_sow_outdoor, pl.desert_transplant, pl.sow_indoor_weeks_before_transplant
+                   pl.aus_sow_outdoor, pl.aus_transplant, pl.sow_indoor_weeks_before_transplant
             FROM seed_inventory si
             JOIN plants pl ON si.plant_id = pl.id
             WHERE si.quantity_seeds > 0 OR si.quantity_seeds IS NULL
@@ -513,7 +513,7 @@ def personal_calendar(months: int = 3):
 
             plant_name = r["plant_name"]
             # Check if currently in sow window
-            sow_raw = r.get("desert_sow_outdoor")
+            sow_raw = r.get("aus_sow_outdoor")
             if sow_raw:
                 try:
                     sow = json.loads(sow_raw) if isinstance(sow_raw, str) else sow_raw
@@ -540,7 +540,7 @@ def personal_calendar(months: int = 3):
                     pass
 
             # Check transplant window + indoor start
-            trans_raw = r.get("desert_transplant")
+            trans_raw = r.get("aus_transplant")
             weeks = r.get("sow_indoor_weeks_before_transplant") or 0
             if trans_raw and weeks:
                 try:
@@ -726,7 +726,7 @@ def calendar_ical_feed(types: Optional[str] = Query(None, description="Comma-sep
             plant_row = db.execute("SELECT * FROM plants WHERE id = ?", (r["plant_id"],)).fetchone()
             if plant_row:
                 plant = row_to_dict(plant_row)
-                sow = plant.get("desert_sow_outdoor")
+                sow = plant.get("aus_sow_outdoor")
                 if sow:
                     try:
                         s = parse_md(sow[0], year)

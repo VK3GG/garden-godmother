@@ -72,7 +72,7 @@ def get_ground_plant(gp_id: int):
                    a.default_irrigation_type as area_default_irrigation_type,
                    a.default_irrigation_zone_name as area_default_irrigation_zone_name,
                    a.zone_id as area_zone_id,
-                   v.name as variety_name, v.desert_rating as variety_desert_rating,
+                   v.name as variety_name, v.aus_rating as variety_aus_rating,
                    v.description as variety_description
             FROM ground_plants gp
             JOIN plants p ON gp.plant_id = p.id

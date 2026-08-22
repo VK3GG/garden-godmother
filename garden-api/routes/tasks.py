@@ -290,7 +290,7 @@ def generate_tasks():
         for plant in all_plants:
             plant_d = dict(plant)
             weeks_before = plant_d.get("sow_indoor_weeks_before_transplant")
-            transplant_raw = plant_d.get("desert_transplant")
+            transplant_raw = plant_d.get("aus_transplant")
             if weeks_before and transplant_raw:
                 # Check seed inventory first — don't suggest starting seeds the user doesn't have
                 seed_count = db.execute(
@@ -346,7 +346,7 @@ def generate_tasks():
         # 4. Direct sow: ONLY if user has seeds in inventory OR an active lifecycle plan with direct_sow method
         for plant in all_plants:
             plant_d = dict(plant)
-            sow_raw = plant_d.get("desert_sow_outdoor")
+            sow_raw = plant_d.get("aus_sow_outdoor")
             if sow_raw:
                 # Check if user has seeds OR an active lifecycle plan for this plant
                 seed_count = db.execute(
@@ -1709,8 +1709,8 @@ def lifecycle_recommend(plant_id: int):
         available_trays = [{"id": r["id"], "name": r["name"], "empty_cells": r["empty_cells"]} for r in tray_space]
 
         # Determine windows
-        sow_outdoor = plant.get("desert_sow_outdoor")
-        transplant_window = plant.get("desert_transplant")
+        sow_outdoor = plant.get("aus_sow_outdoor")
+        transplant_window = plant.get("aus_transplant")
         weeks_before = plant.get("sow_indoor_weeks_before_transplant") or 0
 
         in_direct_sow_window = False

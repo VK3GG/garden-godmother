@@ -484,7 +484,7 @@ def _is_plantable_now(plant: dict) -> list[str]:
     today = date.today()
     actions = []
 
-    sow = plant.get("desert_sow_outdoor")
+    sow = plant.get("aus_sow_outdoor")
     if sow:
         start = parse_md(sow[0])
         end = parse_md(sow[1])
@@ -495,7 +495,7 @@ def _is_plantable_now(plant: dict) -> list[str]:
             if today >= start or today <= end:
                 actions.append("direct_sow")
 
-    trans = plant.get("desert_transplant")
+    trans = plant.get("aus_transplant")
     if trans:
         start = parse_md(trans[0])
         end = parse_md(trans[1])

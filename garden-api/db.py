@@ -99,7 +99,7 @@ def get_db(*, attach_ref: bool = True):
 
 def row_to_dict(row):
     d = dict(row)
-    for key in ("desert_seasons", "desert_sow_outdoor", "desert_transplant", "desert_harvest"):
+    for key in ("aus_seasons", "aus_sow_outdoor", "aus_transplant", "aus_harvest"):
         if key in d and d[key]:
             d[key] = json.loads(d[key])
     return d

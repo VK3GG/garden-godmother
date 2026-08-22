@@ -1099,7 +1099,7 @@ def startup_run_migrations():
         def _add_requested_plants(db):
             """Add plants requested by users: Mini Carnation, Sweet Banana Pepper, Pinto Bean, Zinnia varieties."""
             new_plants = [
-                # (name, category, subcategory, dtm_min, dtm_max, spacing, sun, water, heat_tol, cold_tol, desert_seasons, sow_indoor, sow_outdoor, transplant, harvest, notes)
+                # (name, category, subcategory, dtm_min, dtm_max, spacing, sun, water, heat_tol, cold_tol, aus_seasons, sow_indoor, sow_outdoor, transplant, harvest, notes)
                 ("Mini Carnation", "flower", "annual flower", 60, 90, 6, "full", "moderate", "high", "moderate",
                  '["cool","warm"]', None, '["10-01","03-15"]', '["10-15","03-31"]', None,
                  "Compact dwarf carnations with frilly blooms. Heat tolerant, great for borders and containers. Attracts butterflies."),
@@ -1115,9 +1115,9 @@ def startup_run_migrations():
                 if not existing:
                     db.execute(
                         """INSERT INTO plants (name, category, subcategory, days_to_maturity_min, days_to_maturity_max,
-                           spacing_inches, sun, water, heat_tolerance, cold_tolerance, desert_seasons,
-                           sow_indoor_weeks_before_transplant, desert_sow_outdoor, desert_transplant,
-                           desert_harvest, notes)
+                           spacing_inches, sun, water, heat_tolerance, cold_tolerance, aus_seasons,
+                           sow_indoor_weeks_before_transplant, aus_sow_outdoor, aus_transplant,
+                           aus_harvest, notes)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                         p
                     )
@@ -1127,7 +1127,7 @@ def startup_run_migrations():
             if zinnia:
                 zinnia_id = zinnia[0]
                 new_varieties = [
-                    # (name, description, dtm_min, dtm_max, heat_tol, disease_res, flavor, size, color, growth, desert_rating, desert_notes, source)
+                    # (name, description, dtm_min, dtm_max, heat_tol, disease_res, flavor, size, color, growth, aus_rating, desert_notes, source)
                     ("Profusion Orange", "Outstanding heat and disease resistance. Compact mounds of single orange blooms all season. Zinnia marylandica hybrid.",
                      45, 60, "excellent", None, "N/A (ornamental)", "Compact (12-15 in)", "Orange", "Compact mound", 5,
                      "Specific color selection from the Profusion series. Brilliant orange single blooms non-stop through AZ summer.", "Hybrid"),
@@ -1153,7 +1153,7 @@ def startup_run_migrations():
                         db.execute(
                             """INSERT INTO varieties (plant_id, name, description, days_to_maturity_min, days_to_maturity_max,
                                heat_tolerance, disease_resistance, flavor_profile, size, color,
-                               growth_habit, desert_rating, desert_notes, source)
+                               growth_habit, aus_rating, desert_notes, source)
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                             (zinnia_id, *v)
                         )
