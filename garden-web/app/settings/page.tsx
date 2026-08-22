@@ -2448,7 +2448,7 @@ export default function SettingsPage() {
         <SettingsCard id="about" title="About" icon="&#x2139;&#xFE0F;">
           <FieldRow label="Version">
             <span className="text-sm font-mono text-earth-800 dark:text-gray-200">
-              Garden Godmother v{settings.version}
+              Aus Garden Goddess v{settings.version}
             </span>
           </FieldRow>
           <FieldRow label="Plant Database">

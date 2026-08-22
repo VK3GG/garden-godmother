@@ -18,12 +18,12 @@ async def send_email_notification(config: dict, title: str, body: str, to_email:
     """Send email notification via SMTP."""
     msg = MIMEMultipart('alternative')
     msg['Subject'] = title
-    msg['From'] = f"Garden Godmother <{config.get('smtp_user', '')}>"
+    msg['From'] = f"Aus Garden Goddess <{config.get('smtp_user', '')}>"
     msg['To'] = to_email or config.get('smtp_user', '')
 
     html = f"""<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
         <div style="background: #16a34a; color: white; padding: 12px 20px; border-radius: 12px 12px 0 0;">
-            <strong>🌱 Garden Godmother</strong>
+            <strong>🌱 Aus Garden Goddess</strong>
         </div>
         <div style="background: white; border: 1px solid #e5e7eb; padding: 20px; border-radius: 0 0 12px 12px;">
             <h2 style="color: #374151; margin: 0 0 12px 0; font-size: 18px;">{title}</h2>
@@ -47,7 +47,7 @@ async def send_discord_notification(config: dict, title: str, body: str):
                 "title": title,
                 "description": body,
                 "color": 0x16a34a,
-                "footer": {"text": "Garden Godmother"},
+                "footer": {"text": "Aus Garden Goddess"},
             }]
         })
 

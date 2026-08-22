@@ -436,7 +436,7 @@ export default function GardenProfilePage() {
       <div className="text-center py-4">
         <p className="text-xs text-earth-400 dark:text-gray-500">
           Powered by{' '}
-          <span className="font-medium text-garden-600 dark:text-garden-400">Garden Godmother</span>
+          <span className="font-medium text-garden-600 dark:text-garden-400">Aus Garden Goddess</span>
           {' · '}
           <Link href="/settings#coop" className="hover:underline">Co-op settings</Link>
         </p>

@@ -228,7 +228,7 @@ export default function SetupPage() {
               <Logo size={64} />
             </div>
             <h1 className="text-2xl font-bold text-garden-700 dark:text-garden-400 mb-2">
-              Welcome to Garden Godmother
+              Welcome to Aus Garden Goddess
             </h1>
             <p className="text-earth-500 dark:text-gray-400 mb-6 leading-relaxed">
               Your personal garden management system. Track plantings, plan your seasons,

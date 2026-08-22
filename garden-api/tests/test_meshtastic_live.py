@@ -11,7 +11,7 @@ Discovered channel layout on 192.168.3.55 (2026-04-03):
   [3] Fireflies   (role=SECONDARY)
   [4] gem-and-jam (role=SECONDARY)
   [5] azmsh       (role=SECONDARY)
-  [6] gardening   (role=SECONDARY)  <- Garden Godmother channel
+  [6] gardening   (role=SECONDARY)  <- Aus Garden Goddess channel
   [7] glendale    (role=SECONDARY)
 
 Python 3.9 compatibility note:

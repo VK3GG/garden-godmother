@@ -1,5 +1,5 @@
 self.addEventListener('push', function(event) {
-  let data = { title: 'Garden Godmother', body: 'You have a notification', url: '/' };
+  let data = { title: 'Aus Garden Goddess', body: 'You have a notification', url: '/' };
   try { data = event.data.json(); } catch(e) {}
   event.waitUntil(
     self.registration.showNotification(data.title, {

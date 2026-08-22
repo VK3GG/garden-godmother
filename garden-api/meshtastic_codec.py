@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-GGMP v1 — Garden Godmother Mesh Protocol
+GGMP v1 — Aus Garden Goddess Mesh Protocol
 Binary message codec for Meshtastic LoRa transport.
 All messages ≤ 200 bytes.
 

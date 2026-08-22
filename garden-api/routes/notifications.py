@@ -129,13 +129,13 @@ async def test_notification(channel_type: str, request: Request):
         user_email = user_email_row["email"] if user_email_row else None
     try:
         if channel_type == "email":
-            await send_email_notification(config, "Test Notification", "This is a test notification from Garden Godmother!", user_email)
+            await send_email_notification(config, "Test Notification", "This is a test notification from Aus Garden Goddess!", user_email)
         elif channel_type == "discord":
-            await send_discord_notification(config, "Test Notification", "This is a test notification from Garden Godmother!")
+            await send_discord_notification(config, "Test Notification", "This is a test notification from Aus Garden Goddess!")
         elif channel_type == "webpush":
-            await send_webpush_notification(user["id"], "Test Notification", "This is a test from Garden Godmother!")
+            await send_webpush_notification(user["id"], "Test Notification", "This is a test from Aus Garden Goddess!")
         elif channel_type == "pushbullet":
-            await send_pushbullet_notification(config, "Test Notification", "This is a test notification from Garden Godmother!")
+            await send_pushbullet_notification(config, "Test Notification", "This is a test notification from Aus Garden Goddess!")
         return {"ok": True}
     except Exception as e:
         raise HTTPException(500, f"Notification failed: {str(e)[:200]}")

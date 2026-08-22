@@ -92,7 +92,7 @@ export function MobileNav() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-earth-200 dark:border-gray-700">
             <div className="flex items-center gap-2">
               <Logo size={24} />
-              <span className="text-lg font-bold text-garden-700 dark:text-garden-400">Garden Godmother</span>
+              <span className="text-lg font-bold text-garden-700 dark:text-garden-400">Aus Garden Goddess</span>
             </div>
             <button
               onClick={() => setOpen(false)}

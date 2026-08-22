@@ -35,7 +35,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-3">
             <Logo size={48} />
           </div>
-          <h1 className="text-2xl font-bold text-garden-700 dark:text-garden-400">Garden Godmother</h1>
+          <h1 className="text-2xl font-bold text-garden-700 dark:text-garden-400">Aus Garden Goddess</h1>
           <p className="text-earth-400 dark:text-gray-500 text-sm mt-1">Sign in to your garden</p>
         </div>
 

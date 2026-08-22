@@ -878,14 +878,14 @@ def calendar_ical_feed(types: Optional[str] = Query(None, description="Comma-sep
         frozenset({"amendments"}): "\U0001F9EA Soil Amendments",
         frozenset({"lifecycle"}): "\U0001F504 Lifecycle Plans",
     }
-    cal_name = _filter_cal_names.get(frozenset(type_filter), "Garden Godmother")
+    cal_name = _filter_cal_names.get(frozenset(type_filter), "Aus Garden Goddess")
 
     # Build ICS output
     now_stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//Garden Godmother//EN",
+        "PRODID:-//Aus Garden Goddess//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH",
         f"X-WR-CALNAME:{cal_name}",
@@ -943,7 +943,7 @@ def calendar_ical_url(request: Request):
     return {
         "master": {
             "url": base,
-            "name": "Garden Godmother (All Events)",
+            "name": "Aus Garden Goddess (All Events)",
         },
         "feeds": [
             {

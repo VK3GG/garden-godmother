@@ -14,20 +14,20 @@ import { UserMenu } from './user-menu';
 import { AuthNav } from './auth-layout';
 
 export const metadata: Metadata = {
-  title: 'Garden Godmother',
+  title: 'Aus Garden Goddess',
   description: 'Your personal garden management system',
   icons: { icon: '/favicon.svg' },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Garden Godmother',
+    title: 'Aus Garden Goddess',
   },
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-title': 'Garden Godmother',
+    'apple-mobile-web-app-title': 'Aus Garden Goddess',
   },
 };
 
@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="flex items-center justify-between h-14 sm:h-16">
                   <Link href="/" className="flex items-center gap-2 shrink-0">
                     <Logo size={28} />
-                    <span className="text-lg sm:text-xl font-bold text-garden-700 dark:text-garden-400">Garden Godmother</span>
+                    <span className="text-lg sm:text-xl font-bold text-garden-700 dark:text-garden-400">Aus Garden Goddess</span>
                   </Link>
                   {/* Desktop nav - HubSpot-style grouped dropdowns */}
                   <div className="hidden lg:flex items-center gap-1">

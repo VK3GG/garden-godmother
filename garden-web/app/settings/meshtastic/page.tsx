@@ -574,7 +574,7 @@ export default function MeshtasticSettingsPage() {
           )}
 
           <p className="text-xs text-earth-500 dark:text-gray-400 pt-1">
-            💡 Tip: Create a channel called &ldquo;gardening&rdquo; on your node to connect with other Garden Godmother users in your area.
+            💡 Tip: Create a channel called &ldquo;gardening&rdquo; on your node to connect with other Aus Garden Goddess users in your area.
           </p>
         </div>
       </Card>

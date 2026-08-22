@@ -211,7 +211,7 @@ export default function PrintCalendarPage() {
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
           <h1 className="page-header" style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>
-            {usdaZone ? `Zone ${usdaZone}` : 'Garden Godmother'} — Planting Calendar
+            {usdaZone ? `Zone ${usdaZone}` : 'Aus Garden Goddess'} — Planting Calendar
           </h1>
           <p className="page-subheader" style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
             {year} Planting Calendar

@@ -1,4 +1,4 @@
-"""Unit tests for the GGMP (Garden Godmother Mesh Protocol) Meshtastic codec.
+"""Unit tests for the GGMP (Aus Garden Goddess Mesh Protocol) Meshtastic codec.
 
 These tests verify the binary codec without requiring any real radio hardware.
 All tests operate on in-memory bytes only.

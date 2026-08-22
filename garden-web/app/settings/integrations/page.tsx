@@ -216,7 +216,7 @@ export default function IntegrationsPage() {
           sensor_type: sensorTypeMap[candidate.entity_id] || 'moisture',
         }),
       });
-      toast('Sensor added to Garden Godmother');
+      toast('Sensor added to Aus Garden Goddess');
       setAssignedIds(prev => new Set([...Array.from(prev), candidate.entity_id]));
     } catch {
       toast('Failed to add sensor');
