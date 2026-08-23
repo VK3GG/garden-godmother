@@ -1029,6 +1029,7 @@ function PlantsPageInner() {
               )}
             </div>
           ) : (
+            <div>
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3' : 'space-y-3'}>
               {plants.map((plant) => (
                 <div key={plant.id} id={`plant-card-${plant.id}`} className={getCompanionStyle(plant.name)}>
@@ -1631,7 +1632,6 @@ function PlantsPageInner() {
             </div>
             {/* OpenPlantBook search when there ARE local results */}
             {debouncedSearch && plants.length > 0 && (
-              <div>
               <div className="mt-6 border-t border-earth-200 dark:border-gray-700 pt-4 text-center">
                 <p className="text-sm text-earth-500 dark:text-gray-400 mb-3">
                   Not finding what you need? Search OpenPlantBook for &ldquo;{debouncedSearch}&rdquo;
@@ -1694,6 +1694,7 @@ function PlantsPageInner() {
                 )}
               </div>
             )}
+            </div>
           )}
         </main>
       </div>
