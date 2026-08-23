@@ -960,7 +960,7 @@ function PlantsPageInner() {
                   <button
                     onClick={async () => {
                       try {
-                        const resp = await fetch(`/api/openplantbook/search?q=${encodeURIComponent(debouncedSearch)}`, { credentials: 'include' });
+                        const resp = await fetch(`${API_URL}/api/openplantbook/search?q=${encodeURIComponent(debouncedSearch)}`, { credentials: 'include' });
                         if (resp.status === 429) {
                           alert('OpenPlantBook rate limit reached. Please try again tomorrow.');
                           return;
@@ -995,7 +995,7 @@ function PlantsPageInner() {
                           <button
                             onClick={async () => {
                               try {
-                                const resp = await fetch(`/api/openplantbook/import`, {
+                                const resp = await fetch(`${API_URL}/api/openplantbook/import`, {
                                   method: 'POST',
                                   credentials: 'include',
                                   headers: { 'Content-Type': 'application/json' },
