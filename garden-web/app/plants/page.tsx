@@ -1631,6 +1631,7 @@ function PlantsPageInner() {
             </div>
             {/* OpenPlantBook search when there ARE local results */}
             {debouncedSearch && plants.length > 0 && (
+              <div>
               <div className="mt-6 border-t border-earth-200 dark:border-gray-700 pt-4 text-center">
                 <p className="text-sm text-earth-500 dark:text-gray-400 mb-3">
                   Not finding what you need? Search OpenPlantBook for &ldquo;{debouncedSearch}&rdquo;
