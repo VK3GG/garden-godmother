@@ -1383,21 +1383,40 @@ async def openplantbook_search(q: str = Query(..., min_length=2)):
 
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
+            headers = {"Authorization": f"Token {plantbook_key}"}
+            # Search public plants
             r = await client.get(
                 f"{OPENPLANTBOOK_BASE}/plant/search",
                 params={"alias": q},
-                headers={"Authorization": f"Token {plantbook_key}"},
+                headers=headers,
             )
-            if r.status_code == 200:
-                data = r.json()
-                _plantbook_cache[cache_key] = (now, data)
-                return data
-            elif r.status_code == 401:
+            if r.status_code == 401:
                 raise HTTPException(401, "Invalid OpenPlantbook API key")
             elif r.status_code == 429:
                 raise HTTPException(429, "OpenPlantbook rate limit exceeded")
-            else:
+            elif r.status_code != 200:
                 raise HTTPException(r.status_code, f"OpenPlantbook API error: {r.status_code}")
+
+            public_data = r.json()
+            results = public_data.get("results", [])
+            seen_pids = {p["pid"] for p in results}
+
+            # Also search user plants
+            r2 = await client.get(
+                f"{OPENPLANTBOOK_BASE}/plant/search",
+                params={"alias": q, "search_in": "user"},
+                headers=headers,
+            )
+            if r2.status_code == 200:
+                user_results = r2.json().get("results", [])
+                for p in user_results:
+                    if p["pid"] not in seen_pids:
+                        results.append(p)
+                        seen_pids.add(p["pid"])
+
+            data = {"count": len(results), "next": None, "previous": None, "results": results}
+            _plantbook_cache[cache_key] = (now, data)
+            return data
     except httpx.RequestError as exc:
         raise HTTPException(503, f"OpenPlantbook API unreachable: {exc}")
 
