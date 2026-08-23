@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getPlants, getPlantCalendar, getPlantStats, getPlantVarieties, getPlantTips, getPlantDetails, getBeds, getTrays, getTrayGrid, getBedGrid, getPlantCompatiblePlanters, getGroundPlants, getExportUrl } from '../api';
+import { getPlants, getPlantCalendar, getPlantStats, getPlantVarieties, getPlantTips, getPlantDetails, getBeds, getTrays, getTrayGrid, getBedGrid, getPlantCompatiblePlanters, getGroundPlants, getExportUrl, API_URL } from '../api';
 import { getPlantIcon } from '../plant-icons';
 import { TypeaheadSelect } from '../typeahead-select';
 import { CardSkeleton } from '../skeleton';
