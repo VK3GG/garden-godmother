@@ -1363,6 +1363,81 @@ _plantbook_cache: dict[str, tuple[float, dict]] = {}
 PLANTBOOK_CACHE_TTL = 86400  # 24 hours
 
 
+
+# ─── Australian Common Name to Scientific Name Lookup ───
+AUS_COMMON_NAMES = {
+    "warrigal greens": "tetragonia tetragonioides",
+    "warrigal": "tetragonia tetragonioides",
+    "lemon myrtle": "backhousia citriodora",
+    "lilly pilly": "syzygium smithii",
+    "lillypilly": "syzygium smithii",
+    "davidson plum": "davidsonia pruriens",
+    "davidson's plum": "davidsonia pruriens",
+    "kakadu plum": "terminalia ferdinandiana",
+    "quandong": "santalum acuminatum",
+    "wattleseed": "acacia victoriae",
+    "mountain pepper": "tasmannia lanceolata",
+    "pepperberry": "tasmannia lanceolata",
+    "aniseed myrtle": "syzygium anisatum",
+    "native mint": "mentha australis",
+    "river mint": "mentha australis",
+    "saltbush": "atriplex nummularia",
+    "old man saltbush": "atriplex nummularia",
+    "midyim berry": "austromyrtus dulcis",
+    "riberry": "syzygium luehmannii",
+    "native lemongrass": "cymbopogon ambiguus",
+    "bush tomato": "solanum centrale",
+    "kutjera": "solanum centrale",
+    "macadamia": "macadamia integrifolia",
+    "native violet": "viola hederacea",
+    "murnong": "microseris lanceolata",
+    "yam daisy": "microseris lanceolata",
+    "sea celery": "apium prostratum",
+    "native sea celery": "apium prostratum",
+    "chocolate lily": "arthropodium strictum",
+    "finger lime": "citrus australasica",
+    "silverbeet": "beta vulgaris",
+    "silver beet": "beta vulgaris",
+    "broad bean": "vicia faba",
+    "broadbean": "vicia faba",
+    "rocket": "eruca sativa",
+    "arugula": "eruca sativa",
+    "capsicum": "capsicum annuum",
+    "sweet corn": "zea mays",
+    "pumpkin": "cucurbita maxima",
+    "beetroot": "beta vulgaris subsp. vulgaris",
+    "leek": "allium ampeloprasum",
+    "coriander": "coriandrum sativum",
+    "cilantro": "coriandrum sativum",
+    "rhubarb": "rheum rhabarbarum",
+    "snow pea": "pisum sativum",
+    "kohlrabi": "brassica oleracea",
+    "swede": "brassica napus",
+    "rutabaga": "brassica napus",
+    "globe artichoke": "cynara scolymus",
+    "cavolo nero": "brassica oleracea",
+    "tuscan kale": "brassica oleracea",
+    "black kale": "brassica oleracea",
+    "choko": "sechium edule",
+    "chayote": "sechium edule",
+    "climbing bean": "phaseolus vulgaris",
+    "french bean": "phaseolus vulgaris",
+    "cherry tomato": "solanum lycopersicum",
+    "zucchini": "cucurbita pepo",
+    "courgette": "cucurbita pepo",
+    "cumquat": "citrus japonica",
+    "kumquat": "citrus japonica",
+    "feijoa": "acca sellowiana",
+    "pineapple guava": "acca sellowiana",
+    "tamarillo": "solanum betaceum",
+    "tree tomato": "solanum betaceum",
+    "vietnamese mint": "persicaria odorata",
+    "galangal": "alpinia galanga",
+    "borage": "borago officinalis",
+    "calendula": "calendula officinalis",
+    "pot marigold": "calendula officinalis",
+}
+
 @router.get("/api/openplantbook/search")
 async def openplantbook_search(q: str = Query(..., min_length=2)):
     """Proxy search to OpenPlantbook API."""
@@ -1374,6 +1449,10 @@ async def openplantbook_search(q: str = Query(..., min_length=2)):
             "Register at https://open.plantbook.io for a free API key.",
         )
 
+    # Check if query matches a common Australian name
+    q_lower = q.lower().strip()
+    if q_lower in AUS_COMMON_NAMES:
+        q = AUS_COMMON_NAMES[q_lower]
     cache_key = f"plantbook:search:{q.lower()}"
     now = time.time()
     if cache_key in _plantbook_cache:
