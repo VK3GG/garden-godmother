@@ -1629,6 +1629,70 @@ function PlantsPageInner() {
                 </div>
               ))}
             </div>
+            {/* OpenPlantBook search when there ARE local results */}
+            {debouncedSearch && plants.length > 0 && (
+              <div className="mt-6 border-t border-earth-200 dark:border-gray-700 pt-4 text-center">
+                <p className="text-sm text-earth-500 dark:text-gray-400 mb-3">
+                  Not finding what you need? Search OpenPlantBook for &ldquo;{debouncedSearch}&rdquo;
+                </p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const resp = await fetch(`${API_URL}/api/openplantbook/search?q=${encodeURIComponent(debouncedSearch)}`, { credentials: 'include' });
+                      if (resp.status === 429) { alert('OpenPlantBook rate limit reached. Please try again tomorrow.'); return; }
+                      if (resp.status === 401) { alert('OpenPlantBook not configured. Please add your API key in Settings > Integrations.'); return; }
+                      const data = await resp.json();
+                      if (data.detail) { alert(data.detail); return; }
+                      setOpbResults(data.results || []);
+                      setShowOpbResults(true);
+                    } catch (e) {
+                      alert('OpenPlantBook search failed. Please try again later.');
+                    }
+                  }}
+                  className="px-4 py-2 bg-garden-500 text-white rounded-lg hover:bg-garden-600 transition-colors text-sm"
+                >
+                  🌿 Search OpenPlantBook
+                </button>
+                {showOpbResults && opbResults.length > 0 && (
+                  <div className="mt-4 text-left max-w-lg mx-auto space-y-2">
+                    {opbResults.map((r: any) => (
+                      <div key={r.pid} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-earth-200 dark:border-gray-700">
+                        <div>
+                          <p className="font-medium text-earth-800 dark:text-gray-100">{r.display_pid}</p>
+                          <p className="text-xs text-earth-400 dark:text-gray-500">{r.category}</p>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const resp = await fetch(`${API_URL}/api/openplantbook/import`, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ pid: r.pid, display_name: r.display_pid }),
+                              });
+                              if (resp.status === 429) { alert('OpenPlantBook rate limit reached. Please try again tomorrow.'); return; }
+                              const result = await resp.json();
+                              if (resp.ok) {
+                                alert(result.message || `${r.display_pid} imported successfully!`);
+                                setShowOpbResults(false);
+                                window.location.reload();
+                              } else {
+                                alert(result.detail || 'Import failed');
+                              }
+                            } catch (e) {
+                              alert('Import failed. Please try again later.');
+                            }
+                          }}
+                          className="px-3 py-1 bg-garden-500 text-white rounded text-sm hover:bg-garden-600"
+                        >
+                          Import
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           )}
         </main>
       </div>
